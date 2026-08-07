@@ -119,7 +119,9 @@ body {
 
 #search-input {
   width: 100%;
-  padding: 9px 12px 9px 36px;
+  /* Logical padding so the 36px gutter follows the search icon in RTL. */
+  padding-block: 9px;
+  padding-inline: 36px 12px;
   background: rgba(255,255,255,0.15);
   border: 1px solid rgba(255,255,255,0.2);
   border-radius: 22px;
@@ -137,7 +139,7 @@ body {
 
 .search-icon {
   position: absolute;
-  left: 28px;
+  inset-inline-start: 28px;
   top: 50%;
   transform: translateY(-50%);
   opacity: 0.65;
@@ -147,7 +149,7 @@ body {
 #search-clear {
   display: none;
   position: absolute;
-  right: 28px;
+  inset-inline-end: 28px;
   top: 50%;
   transform: translateY(-50%);
   background: rgba(255,255,255,0.25);
@@ -233,7 +235,7 @@ body {
 .section-hero::before {
   content: '';
   position: absolute;
-  right: -30px;
+  inset-inline-end: -30px;
   top: -30px;
   width: 140px;
   height: 140px;
@@ -381,7 +383,7 @@ body {
 }
 
 .acc-body ul, .acc-body ol {
-  padding-left: 20px;
+  padding-inline-start: 20px;
   margin-bottom: 10px;
 }
 
@@ -397,8 +399,11 @@ body {
 /* Callout boxes */
 .callout {
   background: var(--teal-faint);
-  border-left: 3px solid var(--teal);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  border-inline-start: 3px solid var(--teal);
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+  border-start-end-radius: var(--radius-sm);
+  border-end-end-radius: var(--radius-sm);
   padding: 10px 12px;
   margin: 10px 0;
 }
@@ -462,7 +467,7 @@ body {
 .home-hero::after {
   content: '';
   position: absolute;
-  right: -20px;
+  inset-inline-end: -20px;
   bottom: -20px;
   width: 160px;
   height: 160px;
@@ -598,7 +603,7 @@ body {
 .qref-col-title.teal { color: var(--teal); }
 .qref-col-title.rose { color: var(--rose); }
 
-.qref-list { list-style: disc; padding-left: 16px; }
+.qref-list { list-style: disc; padding-inline-start: 16px; }
 .qref-list li { font-size: 12.5px; line-height: 1.5; color: var(--ink); margin-bottom: 2px; }
 
 /* ─── SEARCH RESULTS ─── */
@@ -913,7 +918,7 @@ strong { font-weight: 600; }
   color: var(--ink);
   flex: 1;
   text-align: center;
-  padding-right: 28px; /* offset for back btn width */
+  padding-inline-end: 28px; /* offset for back btn width */
 }
 .tool-grid {
   display: grid;
@@ -1036,7 +1041,7 @@ strong { font-weight: 600; }
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7c7c' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
-  padding-right: 36px;
+  padding-inline-end: 36px;
 }
 .tool-select:focus { border-color: var(--teal); background-color: white; }
 .form-field { padding: 0 16px 12px; }
@@ -1415,3 +1420,111 @@ body.dark .score-result-card { background: #1a1a1a; }
   #print-view .pv-notes { margin-top: 20px; font-size: 13px; white-space: pre-wrap; border-top: 2px solid #111; padding-top: 12px; }
   #print-view .pv-footer { margin-top: 20px; font-size: 11px; color: #999; }
 }
+
+
+/* ═══════════════════════════════════════════════════════
+   RTL (Arabic / Urdu)
+   ═══════════════════════════════════════════════════════
+   Layout mirrors automatically: the stylesheet is flexbox/grid based and the
+   directional properties above use logical equivalents. Only things anchored
+   with a physical keyword need an explicit flip. */
+
+/* The select chevron is a background image positioned with a physical
+   keyword, which logical properties cannot express. */
+[dir="rtl"] .tool-select {
+  background-position: left 10px center;
+}
+
+/* Numeric/latin runs (BP readings, doses, times) keep LTR order inside RTL
+   text so "140/90" does not render reversed. */
+[dir="rtl"] .bp-reading,
+[dir="rtl"] .khr-count,
+[dir="rtl"] .kick-count,
+[dir="rtl"] [style*="tabular-nums"] {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* Chevrons and back arrows point the other way in RTL. */
+[dir="rtl"] .acc-chevron,
+[dir="rtl"] .faq-chevron,
+[dir="rtl"] .appt-chevron,
+[dir="rtl"] .tool-back-btn svg,
+[dir="rtl"] .info-strip > svg:last-child {
+  transform: scaleX(-1);
+}
+
+/* Toast stays centred — translateX(-50%) is direction-agnostic. */
+
+/* ═══════════════════════════════════════════════════════
+   FIRST-RUN LANGUAGE PICKER
+   ═══════════════════════════════════════════════════════
+   Shown once, before the user has ever chosen a language. Each tile is
+   labelled in its own language and script, so the prompt is legible to every
+   speaker without going through English first. */
+
+#lang-picker {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: var(--teal, #1d4e4e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  overflow-y: auto;
+}
+#lang-picker[hidden] { display: none; }
+
+.lang-picker-sheet {
+  width: 100%;
+  max-width: 460px;
+  text-align: center;
+}
+
+.lang-picker-globe { font-size: 44px; line-height: 1; margin-bottom: 10px; }
+
+.lang-picker-heading {
+  color: #fff;
+  font-family: var(--font-serif, Lora, Georgia, serif);
+  font-size: 21px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  min-height: 30px;   /* reserve space: the heading cycles through languages */
+}
+
+.lang-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+@media (max-width: 360px) { .lang-picker-grid { grid-template-columns: 1fr; } }
+
+.lang-picker-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 15px 10px;
+  background: rgba(255,255,255,0.10);
+  border: 1.5px solid rgba(255,255,255,0.28);
+  border-radius: 14px;
+  color: #fff;
+  font-family: var(--font-sans, 'DM Sans', system-ui, sans-serif);
+  cursor: pointer;
+  transition: background .15s, border-color .15s, transform .1s;
+  /* Tiles carry their own dir so RTL names render correctly inside an LTR
+     page (and vice versa) before any locale has been applied. */
+  min-height: 62px;
+  justify-content: center;
+}
+.lang-picker-btn:hover,
+.lang-picker-btn:focus-visible {
+  background: rgba(255,255,255,0.20);
+  border-color: rgba(255,255,255,0.55);
+  outline: none;
+}
+.lang-picker-btn:active { transform: scale(0.98); }
+
+.lang-picker-native { font-size: 17px; font-weight: 700; }
+.lang-picker-prompt { font-size: 11.5px; opacity: 0.82; line-height: 1.3; }

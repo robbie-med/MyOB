@@ -1,12 +1,23 @@
-const CACHE_NAME = 'birth-guide-v2';
+// Bump on every content or code change, including any locale file.
+const CACHE_NAME = 'birth-guide-v5-i18n';
+
+// English is precached unconditionally: it is the fallback layer, so the app
+// cannot render without it. Other locales are cached on first use (see fetch
+// handler) rather than precached, to keep the install payload small.
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './styles.css',
-  './content.js',
-  './tools.js',
+  './styles.css?v=5',
+  './content.js?v=5',
+  './tools.js?v=5',
+  './i18n/i18n.js?v=5',
+  './i18n/locale.en.js?v=5',
 ];
+
+// Locales fetched on demand and kept once seen, so a language the user has
+// actually opened stays available offline.
+const LOCALE_RE = /\/i18n\/locale\.[a-z]{2,3}\.js$/;   // zom has no 2-letter code
 
 self.addEventListener('install', e => {
   e.waitUntil(
@@ -45,7 +56,15 @@ self.addEventListener('fetch', e => {
           caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
         }
         return res;
-      }).catch(() => caches.match('./index.html'));
+      }).catch(() => {
+        // Never serve the HTML shell in place of a missing script: it would
+        // load with status 200 and blow up as a syntax error. Fail cleanly so
+        // i18n.js can fall back to English.
+        if (LOCALE_RE.test(e.request.url) || e.request.destination === 'script') {
+          return new Response('', { status: 504, statusText: 'Offline' });
+        }
+        return caches.match('./index.html');
+      });
     })
   );
 });

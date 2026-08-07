@@ -20,20 +20,12 @@ function fmtTime(ms) {
   return `${m}:${String(s % 60).padStart(2,'0')}`;
 }
 
-function fmtTimeOfDay(ts) {
-  const d = new Date(ts);
-  return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-}
-
-function fmtDate(ts) {
-  return new Date(ts).toLocaleDateString([], { month: 'short', day: 'numeric' });
-}
-
-function fmtDateTime(ts) {
-  const d = new Date(ts);
-  return d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' +
-    d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-}
+// Delegate to I18n so these follow the APP language. Passing [] used the
+// browser locale, so a user on an English phone who picked Spanish got
+// Spanish text with English dates.
+function fmtTimeOfDay(ts) { return I18n.fmt.time(ts); }
+function fmtDate(ts)      { return I18n.fmt.date(ts); }
+function fmtDateTime(ts)  { return I18n.fmt.dateTime(ts); }
 
 // ═══════════════════════════════════════════════════════
 // 1. KICK COUNTER
@@ -55,15 +47,15 @@ function initKick() {
         <div style="font-size:14px;font-weight:700;color:var(--teal);margin-bottom:28px">
           Goal: 10 movements within 2 hours
         </div>
-        <button class="big-action-btn btn-teal" onclick="startKickSession()">Start Session</button>
+        <button class="big-action-btn btn-teal" onclick="startKickSession()">${t('tool.kick.startSession')}</button>
       </div>
     </div>
     <div id="kick-active-view" style="display:none">
       <div class="kick-display">
         <div class="kick-count teal" id="kick-count-num">0</div>
-        <div style="font-size:14px;color:var(--ink-soft);margin-top:4px">movements this session</div>
-        <div style="margin-top:14px;font-size:13px;color:var(--ink-soft)">Elapsed: <span id="kick-elapsed" style="font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums">0:00</span></div>
-        <div style="font-size:12px;color:var(--ink-soft);margin-top:2px">2:00:00 limit</div>
+        <div style="font-size:14px;color:var(--ink-soft);margin-top:4px">${t('tool.kick.movementsThisSession')}</div>
+        <div style="margin-top:14px;font-size:13px;color:var(--ink-soft)">${t('tool.kick.elapsed')} <span id="kick-elapsed" style="font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums">0:00</span></div>
+        <div style="font-size:12px;color:var(--ink-soft);margin-top:2px">${t('tool.kick.20000Limit')}</div>
       </div>
       <div style="padding:0 16px 12px">
         <button class="big-action-btn btn-teal" onclick="recordKick()" style="font-size:20px;padding:22px">
@@ -77,17 +69,17 @@ function initKick() {
         </button>
       </div>
       <div id="kick-limit-alert" style="display:none;margin:8px 16px" class="callout alert">
-        <div class="callout-title">⚠ Less than 10 movements in 2 hours</div>
-        <p>This may need attention — call your doctor.</p>
+        <div class="callout-title">${t('tool.kick.lessThan10MovementsIn')}</div>
+        <p>${t('tool.kick.thisMayNeedAttentionCall')}</p>
       </div>
     </div>
     <div id="kick-success-view" style="display:none;padding:24px 20px;text-align:center">
       <div style="font-size:48px;margin-bottom:8px">✅</div>
-      <div style="font-size:18px;font-weight:700;color:#2e7d32;margin-bottom:4px">10 movements reached!</div>
+      <div style="font-size:18px;font-weight:700;color:#2e7d32;margin-bottom:4px">${t('tool.kick.10MovementsReached')}</div>
       <div id="kick-success-time" style="font-size:13px;color:var(--ink-soft);margin-bottom:20px"></div>
-      <button class="big-action-btn btn-teal" onclick="resetKick()">Start Another Session</button>
+      <button class="big-action-btn btn-teal" onclick="resetKick()">${t('tool.kick.startAnotherSession')}</button>
     </div>
-    <div class="history-section-title">Session History</div>
+    <div class="history-section-title">${t('tool.kick.sessionHistory')}</div>
     <div class="history-list-card" id="kick-history-list"></div>
     <div style="height:16px"></div>`;
   renderKickHistory();
@@ -173,7 +165,7 @@ function renderKickHistory() {
   const el = document.getElementById('kick-history-list');
   if (!el) return;
   if (!kickHistory.length) {
-    el.innerHTML = '<p class="history-empty">No sessions yet</p>';
+    el.innerHTML = `<p class="history-empty">${t('tool.kick.noSessions')}</p>`;
     return;
   }
   el.innerHTML = kickHistory.slice(0, 15).map(r => `
@@ -213,7 +205,7 @@ function initContractions() {
       </div>
     </div>
     <div id="cx-511-alert" style="display:none;margin:0 16px 12px"></div>
-    <div class="history-section-title">Recent Contractions</div>
+    <div class="history-section-title">${t('tool.common.recentContractions')}</div>
     <div class="history-list-card" id="cx-list"></div>
     <div style="height:16px"></div>`;
   renderContractionList();
@@ -271,7 +263,7 @@ function renderContractionList() {
   const el = document.getElementById('cx-list');
   if (!el) return;
   if (!cxList.length) {
-    el.innerHTML = '<p class="history-empty">No contractions recorded yet.<br>Tap "Contraction Starting" when one begins.</p>';
+    el.innerHTML = `<p class="history-empty">${t('tool.cx.noContractions')}</p>`;
     return;
   }
   el.innerHTML = cxList.slice(0, 20).map((c, i) => {
@@ -308,13 +300,13 @@ function check511() {
     alertEl.className = 'alert-511';
     alertEl.style.background = '#ffebee';
     alertEl.style.borderColor = '#c44';
-    alertEl.innerHTML = `<div style="font-size:15px;font-weight:700;color:#c44;margin-bottom:4px">🚨 Time to go to the hospital</div>
+    alertEl.innerHTML = `<div style="font-size:15px;font-weight:700;color:#c44;margin-bottom:4px">${t('tool.common.timeToGoToThe')}</div>
       <div style="font-size:13px;color:var(--ink)">Contractions ~${minsApart} min apart, lasting ~${secsLong}s — call L&D now.</div>`;
   } else if (meets511) {
     alertEl.className = 'alert-511';
     alertEl.style.background = '#fff8e1';
     alertEl.style.borderColor = 'var(--gold)';
-    alertEl.innerHTML = `<div style="font-size:15px;font-weight:700;color:var(--gold);margin-bottom:4px">5-1-1 Pattern Reached</div>
+    alertEl.innerHTML = `<div style="font-size:15px;font-weight:700;color:var(--gold);margin-bottom:4px">${t('tool.common.511PatternReached')}</div>
       <div style="font-size:13px;color:var(--ink)">~${minsApart} min apart, ~${secsLong}s long. If this is your first baby, head to the hospital. Call if water breaks or you're in doubt.</div>`;
   } else {
     alertEl.innerHTML = `<div style="font-size:13px;color:var(--ink-soft);padding:10px 14px;background:var(--teal-faint);border-radius:var(--radius-sm)">
@@ -353,11 +345,11 @@ function initFeeding() {
     <div class="stat-row">
       <div class="stat-box">
         <div class="stat-number" style="color:${flagLow ? '#c44' : 'var(--teal)'}">${count24}</div>
-        <div class="stat-label">Feeds in last 24 hrs</div>
+        <div class="stat-label">${t('tool.feed.feedsInLast24Hrs')}</div>
       </div>
       <div class="stat-box">
         <div class="stat-number" style="color:var(--teal)">${feedLog.length ? fmtTimeOfDay(feedLog[0].ts) : '—'}</div>
-        <div class="stat-label">Last feed</div>
+        <div class="stat-label">${t('tool.feed.lastFeed')}</div>
       </div>
     </div>
     ${flagLow ? `<div class="callout alert" style="margin:0 16px 8px">
@@ -365,9 +357,9 @@ function initFeeding() {
       <p>Newborns typically need 8–12 feedings per 24 hours. If baby is difficult to wake or not gaining weight, call your doctor.</p>
     </div>` : ''}
     <div style="padding:0 16px 12px">
-      <button class="big-action-btn btn-teal" onclick="openModal('feed')">+ Log a Feeding</button>
+      <button class="big-action-btn btn-teal" onclick="openModal('feed')">${t('tool.feed.logAFeeding')}</button>
     </div>
-    <div class="history-section-title">Feed Log</div>
+    <div class="history-section-title">${t('tool.feed.feedLog')}</div>
     <div class="history-list-card" id="feed-list"></div>
     <div style="height:16px"></div>`;
   renderFeedList();
@@ -376,7 +368,7 @@ function initFeeding() {
 function renderFeedList() {
   const el = document.getElementById('feed-list');
   if (!el) return;
-  if (!feedLog.length) { el.innerHTML = '<p class="history-empty">No feeds logged yet.</p>'; return; }
+  if (!feedLog.length) { el.innerHTML = `<p class="history-empty">${t('tool.feed.noFeeds')}</p>`; return; }
   el.innerHTML = feedLog.slice(0, 30).map((f, i) => {
     let detail = '';
     if (f.type === 'breast') detail = `${f.side || ''} · ${f.duration || '?'} min`;
@@ -427,7 +419,7 @@ function saveFeed() {
   document.getElementById('feed-duration').value = '';
   document.getElementById('feed-oz').value = '';
   initFeeding();
-  showToast('Feed logged');
+  showToast(t('tool.feed.feedLogged'));
 }
 
 // ═══════════════════════════════════════════════════════
@@ -451,22 +443,22 @@ function initDiapers() {
       <button class="diaper-big-btn" onclick="addDiaper('wet')" style="background:#e3f2fd;color:#1565c0">
         <span style="font-size:32px">💧</span>
         <span class="dbb-count" id="wet-count" style="color:#1565c0">${wetToday}</span>
-        <span style="font-size:13px;font-weight:700">Wet Today</span>
+        <span style="font-size:13px;font-weight:700">${t('tool.diaper.wetToday')}</span>
       </button>
       <button class="diaper-big-btn" onclick="addDiaper('dirty')" style="background:#fff8e1;color:#f57f17">
         <span style="font-size:32px">💩</span>
         <span class="dbb-count" id="dirty-count" style="color:#f57f17">${dirtyToday}</span>
-        <span style="font-size:13px;font-weight:700">Dirty Today</span>
+        <span style="font-size:13px;font-weight:700">${t('tool.diaper.dirtyToday')}</span>
       </button>
     </div>
     <div class="btn-row" style="margin-bottom:8px">
-      <button class="btn-sm" onclick="addDiaper('both')" style="flex:1;background:var(--teal-faint);color:var(--teal)">+ Both (wet &amp; dirty)</button>
+      <button class="btn-sm" onclick="addDiaper('both')" style="flex:1;background:var(--teal-faint);color:var(--teal)">${t('tool.diaper.bothWetDirty')}</button>
     </div>
     <div class="callout" style="margin:4px 16px 8px">
-      <div class="callout-title">What to expect by age</div>
-      <p>Day 1–2: 1–2 wet diapers · Day 3–4: 3–4 wet · Day 5+: 6+ wet, 3–4 dirty per day. Fewer than 6 wet diapers after day 5 → call your doctor.</p>
+      <div class="callout-title">${t('tool.diaper.whatToExpectByAge')}</div>
+      <p>${t('tool.diaper.day1212')}</p>
     </div>
-    <div class="history-section-title">Today's Log</div>
+    <div class="history-section-title">${t('tool.diaper.todaySLog')}</div>
     <div class="history-list-card" id="diaper-list"></div>
     <div style="height:16px"></div>`;
   renderDiaperList();
@@ -485,7 +477,7 @@ function renderDiaperList() {
   if (!el) return;
   const todayStart = new Date(); todayStart.setHours(0,0,0,0);
   const todayEntries = diaperLog.filter(d => d.ts >= todayStart.getTime());
-  if (!todayEntries.length) { el.innerHTML = '<p class="history-empty">No diapers logged today.</p>'; return; }
+  if (!todayEntries.length) { el.innerHTML = `<p class="history-empty">${t('tool.diaper.noDiapers')}</p>`; return; }
   const icons = { wet: '💧', dirty: '💩', both: '💧💩' };
   const labels = { wet: 'Wet', dirty: 'Dirty', both: 'Wet + Dirty' };
   el.innerHTML = todayEntries.map((d, i) => `
@@ -546,10 +538,10 @@ function initJaundice() {
 
   el.innerHTML = `
     <div class="weight-profile-card" style="margin:12px 16px">
-      <div class="wpc-title">Baby's Birth Date</div>
+      <div class="wpc-title">${t('tool.jaundice.babySBirthDate')}</div>
       <div style="display:flex;gap:10px;align-items:center">
         <input type="date" class="tool-input" id="jaundice-birth-input" value="${birthDate}" max="${new Date().toISOString().split('T')[0]}" style="flex:1">
-        <button class="btn-sm btn-teal" onclick="setJaundiceBirthDate()">Set</button>
+        <button class="btn-sm btn-teal" onclick="setJaundiceBirthDate()">${t('tool.jaundice.set')}</button>
       </div>
     </div>
     ${day !== null ? `
@@ -577,7 +569,7 @@ function setJaundiceBirthDate() {
   if (!val) return;
   localStorage.setItem('jaundice-birth-date', val);
   initJaundice();
-  showToast('Birth date saved');
+  showToast(t('tool.jaundice.birthDateSaved'));
 }
 
 // ═══════════════════════════════════════════════════════
@@ -607,13 +599,13 @@ function initBP() {
       <p>Your most recent reading (${last.s}/${last.d}) is in the ${lastCat.label} range. Contact your doctor today.</p>
     </div>` : ''}
     <div style="padding:${last && lastCat.urgent ? '8px' : '12px'} 16px 12px">
-      <button class="big-action-btn btn-teal" onclick="openModal('bp')">+ Log Blood Pressure</button>
+      <button class="big-action-btn btn-teal" onclick="openModal('bp')">${t('tool.bp.logBloodPressure')}</button>
     </div>
     <div class="callout" style="margin:0 16px 8px">
-      <div class="callout-title">When to call your doctor</div>
-      <p>Any reading ≥ 140/90 during pregnancy or postpartum. ≥ 160/110 is a medical emergency — call L&D or 911.</p>
+      <div class="callout-title">${t('tool.bp.whenToCallYourDoctor')}</div>
+      <p>${t('tool.bp.anyReading14090During')}</p>
     </div>
-    <div class="history-section-title">Readings</div>
+    <div class="history-section-title">${t('tool.bp.readings')}</div>
     <div class="history-list-card" id="bp-list"></div>
     <div style="height:16px"></div>`;
   renderBPList();
@@ -622,7 +614,7 @@ function initBP() {
 function renderBPList() {
   const el = document.getElementById('bp-list');
   if (!el) return;
-  if (!bpLog.length) { el.innerHTML = '<p class="history-empty">No readings logged yet.</p>'; return; }
+  if (!bpLog.length) { el.innerHTML = `<p class="history-empty">${t('tool.bp.noReadings')}</p>`; return; }
   el.innerHTML = bpLog.slice(0, 30).map((r, i) => {
     const cat = getBPCategory(r.s, r.d);
     return `<div class="bp-row">
@@ -644,7 +636,7 @@ function saveBP() {
   const s = parseInt(document.getElementById('bp-systolic').value);
   const d = parseInt(document.getElementById('bp-diastolic').value);
   if (!s || !d || s < 70 || s > 220 || d < 40 || d > 130) {
-    showToast('Enter valid numbers (e.g. 118 / 76)');
+    showToast(t('tool.bp.enterValidNumbersEG'));
     return;
   }
   bpLog.unshift({ ts: Date.now(), s, d });
@@ -656,7 +648,7 @@ function saveBP() {
   initBP();
   const cat = getBPCategory(s, d);
   showToast(`${s}/${d} saved — ${cat.label}`);
-  if (cat.urgent) setTimeout(() => showToast('High reading — contact your doctor', 4000), 400);
+  if (cat.urgent) setTimeout(() => showToast(t('tool.bp.highReadingContactYourDoctor'), 4000), 400);
 }
 
 // ═══════════════════════════════════════════════════════
@@ -685,18 +677,18 @@ function initWeight() {
 
   el.innerHTML = `
     <div class="weight-profile-card">
-      <div class="wpc-title">Your Profile</div>
+      <div class="wpc-title">${t('tool.weight.yourProfile')}</div>
       <div style="display:flex;gap:10px;margin-bottom:10px">
         <div style="flex:1">
-          <label class="form-label">Pre-pregnancy weight (lbs)</label>
+          <label class="form-label">${t('tool.weight.prePregnancyWeightLbs')}</label>
           <input type="number" class="tool-input" id="wp-base" placeholder="e.g. 140" value="${weightProfile.baseWeight || ''}" min="80" max="400">
         </div>
         <div style="flex:1">
-          <label class="form-label">Pre-pregnancy BMI</label>
+          <label class="form-label">${t('tool.weight.prePregnancyBmi')}</label>
           <input type="number" class="tool-input" id="wp-bmi" placeholder="e.g. 22.5" value="${weightProfile.bmi || ''}" min="15" max="60" step="0.1">
         </div>
       </div>
-      <button class="btn-sm btn-teal" onclick="saveWeightProfile()" style="width:100%">Save Profile</button>
+      <button class="btn-sm btn-teal" onclick="saveWeightProfile()" style="width:100%">${t('tool.weight.saveProfile')}</button>
     </div>
     ${range ? `<div class="callout" style="margin:8px 16px">
       <div class="callout-title">IOM guideline for you (${range.label})</div>
@@ -704,9 +696,9 @@ function initWeight() {
       ${totalGain !== null ? ` You have gained <strong>${totalGain > 0 ? '+' : ''}${totalGain} lbs</strong> so far.` : ''}</p>
     </div>` : `<div class="callout" style="margin:8px 16px"><div class="callout-title">Set your profile</div><p>Enter your pre-pregnancy BMI to see personalized IOM gain guidelines.</p></div>`}
     <div style="padding:0 16px 12px">
-      <button class="big-action-btn btn-teal" onclick="openModal('weight')">+ Log Weight</button>
+      <button class="big-action-btn btn-teal" onclick="openModal('weight')">${t('tool.weight.logWeight')}</button>
     </div>
-    <div class="history-section-title">Weight Log</div>
+    <div class="history-section-title">${t('tool.weight.weightLog')}</div>
     <div class="history-list-card" id="weight-list"></div>
     <div style="height:16px"></div>`;
   renderWeightList();
@@ -719,13 +711,13 @@ function saveWeightProfile() {
   if (bmi) weightProfile.bmi = bmi;
   localStorage.setItem('weight-profile', JSON.stringify(weightProfile));
   initWeight();
-  showToast('Profile saved');
+  showToast(t('tool.weight.profileSaved'));
 }
 
 function renderWeightList() {
   const el = document.getElementById('weight-list');
   if (!el) return;
-  if (!weightLog.length) { el.innerHTML = '<p class="history-empty">No weights logged yet.</p>'; return; }
+  if (!weightLog.length) { el.innerHTML = `<p class="history-empty">${t('tool.weight.noWeights')}</p>`; return; }
   const sorted = [...weightLog].sort((a, b) => b.week - a.week || b.ts - a.ts);
   const base = weightProfile.baseWeight;
   el.innerHTML = sorted.slice(0, 20).map((w, i) => {
@@ -752,7 +744,7 @@ function saveWeight() {
   const lbs = parseFloat(document.getElementById('weight-lbs').value);
   const week = parseInt(document.getElementById('weight-week').value);
   if (!lbs || !week || lbs < 80 || lbs > 400 || week < 4 || week > 44) {
-    showToast('Enter valid weight and pregnancy week');
+    showToast(t('tool.weight.enterValidWeightAndPregnancy'));
     return;
   }
   weightLog.push({ ts: Date.now(), lbs, week });
@@ -768,58 +760,25 @@ function saveWeight() {
 // ═══════════════════════════════════════════════════════
 // 8. MOOD CHECK-IN (EPDS)
 // ═══════════════════════════════════════════════════════
-const EPDS_QUESTIONS = [
-  {
-    text: 'I have been able to laugh and see the funny side of things',
-    options: ['As much as I always could', 'Not quite so much now', 'Definitely not so much now', 'Not at all'],
-    scores: [0, 1, 2, 3]
-  },
-  {
-    text: 'I have looked forward with enjoyment to things',
-    options: ['As much as I ever did', 'Rather less than I used to', 'Definitely less than I used to', 'Hardly at all'],
-    scores: [0, 1, 2, 3]
-  },
-  {
-    text: 'I have blamed myself unnecessarily when things went wrong',
-    options: ['No, never', 'Not very often', 'Yes, sometimes', 'Yes, most of the time'],
-    scores: [0, 1, 2, 3]
-  },
-  {
-    text: 'I have been anxious or worried for no good reason',
-    options: ['No, not at all', 'Hardly ever', 'Yes, sometimes', 'Yes, very often'],
-    scores: [0, 1, 2, 3]
-  },
-  {
-    text: 'I have felt scared or panicky for no very good reason',
-    options: ['No, not at all', 'No, not much', 'Yes, sometimes', 'Yes, quite a lot'],
-    scores: [0, 1, 2, 3]
-  },
-  {
-    text: 'Things have been getting on top of me',
-    options: ['No, I have been coping as well as ever', 'No, most of the time I have coped', 'Yes, sometimes I haven\'t been coping well', 'Yes, most of the time I haven\'t been able to cope'],
-    scores: [0, 1, 2, 3]
-  },
-  {
-    text: 'I have been so unhappy that I have had difficulty sleeping',
-    options: ['No, not at all', 'Not very often', 'Yes, sometimes', 'Yes, most of the time'],
-    scores: [0, 1, 2, 3]
-  },
-  {
-    text: 'I have felt sad or miserable',
-    options: ['No, not at all', 'Not very often', 'Yes, quite often', 'Yes, most of the time'],
-    scores: [0, 1, 2, 3]
-  },
-  {
-    text: 'I have been so unhappy that I have been crying',
-    options: ['No, never', 'Only occasionally', 'Yes, quite often', 'Yes, most of the time'],
-    scores: [0, 1, 2, 3]
-  },
-  {
-    text: 'The thought of harming myself has occurred to me',
-    options: ['Never', 'Hardly ever', 'Sometimes', 'Yes, quite often'],
-    scores: [0, 1, 2, 3]
-  },
-];
+// ═══════════════════════════════════════════════════════
+// EPDS — VALIDATED INSTRUMENT, NOT UI COPY
+// ═══════════════════════════════════════════════════════
+// The Edinburgh Postnatal Depression Scale is a validated screening tool.
+// Its scoring thresholds are only meaningful for the exact wording of an
+// officially validated translation, which exist per-language and are NOT
+// interchangeable with a machine translation.
+//
+// Therefore this is the ONE place with no English fallback: if the active
+// locale has no validated EPDS, the tool refuses to run rather than scoring
+// answers to questions the patient read in a different language than the
+// instrument was validated in.
+//
+// To add a language: put the OFFICIAL published translation in that
+// locale file as epds.questions with validated: true. Do not translate it here.
+function getEPDS() {
+  const l = (window.MYOB_LOCALES[I18n.lang] || {}).epds;
+  return (l && l.validated && Array.isArray(l.questions) && l.questions.length === 10) ? l : null;
+}
 
 let epdsAnswers = {};
 let epdsHistory = JSON.parse(localStorage.getItem('epds-history') || '[]');
@@ -831,18 +790,42 @@ function initMood() {
   if (!el) return;
   epdsAnswers = {};
 
+  const epds = getEPDS();
+  if (!epds) {
+    // No validated instrument for this language. Refusing is the safe
+    // failure: a machine-translated depression screen still produces a
+    // number, and that number would look just as authoritative as a real one.
+    const langs = Object.keys(window.MYOB_LOCALES)
+      .filter(c => (window.MYOB_LOCALES[c].epds || {}).validated)
+      .map(c => I18n.LOCALES[c] ? I18n.LOCALES[c].native : c);
+    el.innerHTML = `
+      <div style="padding:24px 20px">
+        <div class="callout alert">
+          <div class="callout-title">${escHtml(I18n.t('tool.mood.unavailableTitle'))}</div>
+          <p>${escHtml(I18n.t('tool.mood.unavailableBody'))}</p>
+        </div>
+        <p style="font-size:13px;color:var(--ink-soft);line-height:1.6;margin-top:12px">
+          ${escHtml(I18n.t('tool.mood.availableIn', { langs: langs.join(', ') }))}
+        </p>
+        <button class="big-action-btn btn-plum" style="margin-top:16px"
+          onclick="I18n.setLocale('en')">${escHtml(I18n.t('tool.mood.switchToEnglish'))}</button>
+      </div>`;
+    return;
+  }
+  const EPDS_Q = epds.questions;
+
   el.innerHTML = `
     <div style="padding:12px 16px 0">
       <p style="font-size:13.5px;color:var(--ink);line-height:1.6;margin-bottom:4px">
-        This is a simplified version of the <strong>Edinburgh Postnatal Depression Scale</strong>.
-        Answer based on how you've felt <strong>in the past 7 days</strong>.
+        This is a simplified version of the <strong>${t('tool.mood.edinburghPostnatalDepressionScale')}</strong>.
+        Answer based on how you've felt <strong>${t('tool.mood.inThePast7Days')}</strong>.
       </p>
-      <p style="font-size:12px;color:var(--ink-soft)">Your answers are saved only on this phone.</p>
+      <p style="font-size:12px;color:var(--ink-soft)">${t('tool.mood.yourAnswersAreSavedOnly')}</p>
     </div>
     <div id="epds-questions">
-      ${EPDS_QUESTIONS.map((q, qi) => `
+      ${EPDS_Q.map((q, qi) => `
         <div class="epds-question">
-          <div class="epds-q-num">Question ${qi + 1} of ${EPDS_QUESTIONS.length}</div>
+          <div class="epds-q-num">${I18n.t('tool.mood.qCounter', { n: qi + 1, total: EPDS_Q.length })}</div>
           <div class="epds-q-text">${q.text}</div>
           <div class="epds-options">
             ${q.options.map((opt, oi) => `
@@ -853,7 +836,7 @@ function initMood() {
         </div>`).join('')}
     </div>
     <div style="padding:12px 16px 16px">
-      <button class="big-action-btn btn-plum" onclick="submitEPDS()">Get My Score</button>
+      <button class="big-action-btn btn-plum" onclick="submitEPDS()">${t('tool.mood.getMyScore')}</button>
     </div>
     <div id="epds-result"></div>
     ${epdsHistory.length ? `
@@ -873,25 +856,31 @@ function initMood() {
 
 function setEPDS(qi, oi) {
   epdsAnswers[qi] = oi;
-  EPDS_QUESTIONS[qi].options.forEach((_, i) => {
+  const _e = getEPDS(); if (!_e) return;
+  _e.questions[qi].options.forEach((_, i) => {
     const el = document.getElementById(`epds-${qi}-${i}`);
     if (el) el.classList.toggle('selected', i === oi);
   });
 }
 
 function getEPDSInterpretation(score) {
-  if (score >= 13) return { label: 'Please contact your doctor', color: '#c44', bg: '#ffebee' };
-  if (score >= 10) return { label: 'Worth discussing with your doctor', color: '#e65100', bg: '#fff3e0' };
-  return { label: 'Low concern', color: '#2e7d32', bg: '#e8f5e9' };
+  // Thresholds are a property of the validated translation, not of the app:
+  // published cutoffs differ between language versions.
+  const cut = (getEPDS() || {}).cutoffs || { concern: 10, high: 13 };
+  if (score >= cut.high)    return { label: I18n.t('tool.mood.interpHigh'),    color: '#c44',     bg: '#ffebee' };
+  if (score >= cut.concern) return { label: I18n.t('tool.mood.interpConcern'), color: '#e65100',  bg: '#fff3e0' };
+  return { label: I18n.t('tool.mood.interpLow'), color: '#2e7d32', bg: '#e8f5e9' };
 }
 
 function submitEPDS() {
-  if (Object.keys(epdsAnswers).length < EPDS_QUESTIONS.length) {
-    showToast('Please answer all ' + EPDS_QUESTIONS.length + ' questions');
+  const epds = getEPDS();
+  if (!epds) return;
+  if (Object.keys(epdsAnswers).length < epds.questions.length) {
+    showToast(I18n.t('tool.mood.answerAll', { total: epds.questions.length }));
     return;
   }
   let score = 0;
-  EPDS_QUESTIONS.forEach((q, qi) => {
+  epds.questions.forEach((q, qi) => {
     score += q.scores[epdsAnswers[qi]];
   });
 
@@ -900,7 +889,7 @@ function submitEPDS() {
   localStorage.setItem('epds-history', JSON.stringify(epdsHistory));
 
   const interp = getEPDSInterpretation(score);
-  const q10score = EPDS_QUESTIONS[9].scores[epdsAnswers[9]];
+  const q10score = epds.questions[9].scores[epdsAnswers[9]];
 
   const result = document.getElementById('epds-result');
   if (result) {
@@ -908,7 +897,7 @@ function submitEPDS() {
       <div class="score-result-card" style="background:${interp.bg};border-left:4px solid ${interp.color}">
         <div class="score-num" style="color:${interp.color}">${score}</div>
         <div class="score-label" style="color:${interp.color}">${interp.label}</div>
-        <div class="score-note">Score out of 30 · Based on the Edinburgh Postnatal Depression Scale</div>
+        <div class="score-note">${t('tool.mood.scoreOutOf30Based')}</div>
         ${score >= 10 ? `<div style="margin-top:10px;font-size:13px;font-weight:600;color:${interp.color}">
           Talking to your doctor — even about a screening score — is always a good step. PPD is very treatable.
         </div>` : `<div style="margin-top:10px;font-size:13px;color:var(--ink-soft)">
@@ -926,22 +915,60 @@ function submitEPDS() {
 // ═══════════════════════════════════════════════════════
 // 9. BIRTH PLAN BUILDER
 // ═══════════════════════════════════════════════════════
+// Structure only: option IDS, never display strings. Storing the English
+// label (as this did before i18n) orphaned every saved answer the moment the
+// user switched language. Labels resolve at render time via i18n.
 const BIRTH_PLAN_QUESTIONS = [
-  { key: 'epidural', q: 'Pain relief preference', opts: ['Yes — epidural', 'No medication', 'Keep options open', 'IV medication only'] },
-  { key: 'mobility', q: 'Movement during labor', opts: ['Want to walk/move', 'Prefer to stay in bed', 'Wireless monitor if available'] },
-  { key: 'delayed-cord', q: 'Delayed cord clamping (30–60 sec)', opts: ['Yes please', 'No preference', 'Discuss with team'] },
-  { key: 'skin-to-skin', q: 'Immediate skin-to-skin after birth', opts: ['Yes — top priority', 'Yes if possible', 'No preference'] },
-  { key: 'pushing', q: 'Pushing position', opts: ['Guided by nurse', 'Want to try different positions', 'Squatting/standing'] },
-  { key: 'episiotomy', q: 'Episiotomy', opts: ['Avoid unless necessary', "Trust the team\u2019s judgment", 'No preference'] },
-  { key: 'cord-cut', q: 'Who cuts the cord', opts: ['Support person', 'Care team', 'No preference'] },
-  { key: 'photos', q: 'Photography during delivery', opts: ['Yes please', 'No photos during delivery', 'Photos after delivery only'] },
-  { key: 'visitors', q: 'Visitors during labor', opts: ['Support person only', 'Close family welcome', 'No visitors'] },
-  { key: 'breastfeed', q: 'Feeding plan', opts: ['Breastfeed exclusively', 'Breastfeed + supplement', 'Formula only', 'Not sure yet'] },
-  { key: 'csection', q: 'If C-section needed', multi: true, opts: ['Low screen (see baby)', 'Support person in OR', 'Skin-to-skin in OR if possible', 'Standard practice is fine'] },
-  { key: 'music', q: 'Atmosphere', opts: ['Music / own playlist', 'Quiet environment', 'No preference'] },
+  { key: "epidural", opts: ["epidural", "none", "open", "iv"] },
+  { key: "mobility", opts: ["walk", "bed", "wireless"] },
+  { key: "delayed-cord", opts: ["yes", "nopref", "discuss"] },
+  { key: "skin-to-skin", opts: ["top", "ifposs", "nopref"] },
+  { key: "pushing", opts: ["nurse", "positions", "squat"] },
+  { key: "episiotomy", opts: ["avoid", "trust", "nopref"] },
+  { key: "cord-cut", opts: ["support", "team", "nopref"] },
+  { key: "photos", opts: ["yes", "none", "after"] },
+  { key: "visitors", opts: ["supportonly", "family", "none"] },
+  { key: "breastfeed", opts: ["exclusive", "supplement", "formula", "unsure"] },
+  { key: "csection", multi: true, opts: ["lowscreen", "supportor", "skinor", "standard"] },
+  { key: "music", opts: ["playlist", "quiet", "nopref"] },
 ];
 
-let birthPlanAnswers = JSON.parse(localStorage.getItem('birth-plan') || '{}');
+const BIRTH_PLAN_LEGACY = {
+  "epidural": { "Yes — epidural": "epidural", "No medication": "none", "Keep options open": "open", "IV medication only": "iv" },
+  "mobility": { "Want to walk/move": "walk", "Prefer to stay in bed": "bed", "Wireless monitor if available": "wireless" },
+  "delayed-cord": { "Yes please": "yes", "No preference": "nopref", "Discuss with team": "discuss" },
+  "skin-to-skin": { "Yes — top priority": "top", "Yes if possible": "ifposs", "No preference": "nopref" },
+  "pushing": { "Guided by nurse": "nurse", "Want to try different positions": "positions", "Squatting/standing": "squat" },
+  "episiotomy": { "Avoid unless necessary": "avoid", "Trust the team’s judgment": "trust", "No preference": "nopref" },
+  "cord-cut": { "Support person": "support", "Care team": "team", "No preference": "nopref" },
+  "photos": { "Yes please": "yes", "No photos during delivery": "none", "Photos after delivery only": "after" },
+  "visitors": { "Support person only": "supportonly", "Close family welcome": "family", "No visitors": "none" },
+  "breastfeed": { "Breastfeed exclusively": "exclusive", "Breastfeed + supplement": "supplement", "Formula only": "formula", "Not sure yet": "unsure" },
+  "csection": { "Low screen (see baby)": "lowscreen", "Support person in OR": "supportor", "Skin-to-skin in OR if possible": "skinor", "Standard practice is fine": "standard" },
+  "music": { "Music / own playlist": "playlist", "Quiet environment": "quiet", "No preference": "nopref" },
+};
+
+// Maps pre-i18n English answers back to option ids, so existing users do not
+// lose a birth plan they already built. Run once, then the flag is set.
+function migrateBirthPlan(saved) {
+  if (localStorage.getItem('birth-plan-v2') === '1') return saved;
+  const out = {};
+  Object.keys(saved || {}).forEach(key => {
+    const map = BIRTH_PLAN_LEGACY[key] || {};
+    const conv = v => (Object.prototype.hasOwnProperty.call(map, v) ? map[v] : v);
+    const v = saved[key];
+    out[key] = Array.isArray(v) ? v.map(conv) : conv(v);
+  });
+  localStorage.setItem('birth-plan', JSON.stringify(out));
+  localStorage.setItem('birth-plan-v2', '1');
+  return out;
+}
+
+// Label lookups — the only place birth-plan display text is produced.
+function bpQuestionLabel(key) { return I18n.t('tool.birthplan.q.' + key + '.label'); }
+function bpOptionLabel(key, optId) { return I18n.t('tool.birthplan.q.' + key + '.opt.' + optId); }
+
+let birthPlanAnswers = migrateBirthPlan(JSON.parse(localStorage.getItem('birth-plan') || '{}'));
 
 TOOL_INITS['tool-birthplan'] = initBirthPlan;
 
@@ -957,15 +984,15 @@ function initBirthPlan() {
     <div id="bpb-questions">
       ${BIRTH_PLAN_QUESTIONS.map(q => `
         <div class="bpb-question">
-          <div class="bpb-q-text">${q.q}</div>
+          <div class="bpb-q-text">${bpQuestionLabel(q.key)}</div>
           <div class="bpb-options">
-            ${q.opts.map(opt => {
+            ${q.opts.map(optId => {
               const isSelected = q.multi
-                ? Array.isArray(birthPlanAnswers[q.key]) && birthPlanAnswers[q.key].includes(opt)
-                : birthPlanAnswers[q.key] === opt;
+                ? Array.isArray(birthPlanAnswers[q.key]) && birthPlanAnswers[q.key].includes(optId)
+                : birthPlanAnswers[q.key] === optId;
               return `<button class="bpb-pill ${isSelected ? 'selected' : ''}"
-                onclick="setBPBAnswer('${q.key}', '${opt.replace(/'/g,"\\'")}', this, ${!!q.multi})">
-                ${opt}
+                onclick="setBPBAnswer('${q.key}', '${optId}', this, ${!!q.multi})">
+                ${bpOptionLabel(q.key, optId)}
               </button>`;
             }).join('')}
           </div>
@@ -1002,10 +1029,10 @@ function renderBirthPlanSummary() {
   if (!answered.length) return '';
   const rows = answered.map(q => {
     const v = birthPlanAnswers[q.key];
-    const display = Array.isArray(v) ? v.join(', ') : v;
+    const display = (Array.isArray(v) ? v : [v]).map(id => bpOptionLabel(q.key, id)).join(', ');
     return `
     <div class="bpo-row">
-      <span class="bpo-q">${q.q}</span>
+      <span class="bpo-q">${bpQuestionLabel(q.key)}</span>
       <span class="bpo-a">${display}</span>
     </div>`;
   }).join('');
@@ -1014,17 +1041,17 @@ function renderBirthPlanSummary() {
     <div class="birth-plan-output">
       <div class="bpo-header">📋 My Birth Preferences (${answered.length}/${BIRTH_PLAN_QUESTIONS.length})</div>
       ${rows}
-      <div style="padding:12px 16px 4px;font-size:13px;font-weight:600;color:var(--ink-soft)">Additional notes / comments</div>
+      <div style="padding:12px 16px 4px;font-size:13px;font-weight:600;color:var(--ink-soft)">${t('tool.birthplan.additionalNotesComments')}</div>
       <div style="padding:0 16px 12px">
         <textarea class="bp-notes-area" id="bp-notes"
-          placeholder="Any other preferences, concerns, or information for your care team…"
+          placeholder="${t('tool.birthplan.anyOtherPreferencesConcernsOr')}"
           oninput="localStorage.setItem('birth-plan-notes', this.value)"
           style="width:100%;min-height:80px;border:1.5px solid var(--rule);border-radius:var(--radius-sm);padding:10px 12px;font-family:var(--font-sans);font-size:14px;color:var(--ink);background:var(--bg);outline:none;resize:vertical;transition:border-color .2s;line-height:1.5;box-sizing:border-box"
         >${savedNotes}</textarea>
       </div>
       <div style="padding:0 16px 16px;display:flex;gap:10px;flex-wrap:wrap">
-        <button class="big-action-btn btn-teal" onclick="copyBirthPlan()" style="flex:1">Copy to Share</button>
-        <button class="big-action-btn btn-navy" onclick="printBirthPlan()" style="flex:1">Print / PDF</button>
+        <button class="big-action-btn btn-teal" onclick="copyBirthPlan()" style="flex:1">${t('tool.birthplan.copyToShare')}</button>
+        <button class="big-action-btn btn-navy" onclick="printBirthPlan()" style="flex:1">${t('tool.birthplan.printPdf')}</button>
       </div>
     </div>`;
 }
@@ -1034,7 +1061,8 @@ function copyBirthPlan() {
   BIRTH_PLAN_QUESTIONS.forEach(q => {
     const v = birthPlanAnswers[q.key];
     if (v && (!Array.isArray(v) || v.length)) {
-      lines.push(`• ${q.q}: ${Array.isArray(v) ? v.join(', ') : v}`);
+      const disp = (Array.isArray(v) ? v : [v]).map(id => bpOptionLabel(q.key, id)).join(', ');
+      lines.push(`• ${bpQuestionLabel(q.key)}: ${disp}`);
     }
   });
   const notes = (document.getElementById('bp-notes') || {}).value
@@ -1043,9 +1071,9 @@ function copyBirthPlan() {
   lines.push('\nGenerated with Pregnancy & Birth Guide');
   const text = lines.join('\n');
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard!'));
+    navigator.clipboard.writeText(text).then(() => showToast(t('tool.birthplan.copiedToClipboard')));
   } else {
-    showToast('Copy not supported on this browser');
+    showToast(t('tool.birthplan.copyNotSupportedOnThis'));
   }
 }
 
@@ -1058,37 +1086,80 @@ function printBirthPlan() {
   });
   const rows = answered.map(q => {
     const v = birthPlanAnswers[q.key];
-    const display = Array.isArray(v) ? v.join(', ') : v;
-    return `<div class="pv-row"><span class="pv-q">${q.q}</span><span class="pv-a">${display}</span></div>`;
+    const display = (Array.isArray(v) ? v : [v]).map(id => bpOptionLabel(q.key, id)).join(', ');
+    return `<div class="pv-row"><span class="pv-q">${bpQuestionLabel(q.key)}</span><span class="pv-a">${display}</span></div>`;
   }).join('');
   const notes = (document.getElementById('bp-notes') || {}).value
     || localStorage.getItem('birth-plan-notes') || '';
   const notesHtml = notes.trim()
-    ? `<div class="pv-notes"><strong>Additional notes:</strong><br>${notes.trim().replace(/\n/g, '<br>')}</div>`
+    ? `<div class="pv-notes"><strong>${t('tool.birthplan.additionalNotes')}</strong><br>${notes.trim().replace(/\n/g, '<br>')}</div>`
     : '';
   pv.innerHTML = `
-    <h1>My Birth Preferences</h1>
-    <div class="pv-meta">Generated ${new Date().toLocaleDateString()}</div>
+    <h1>${t('tool.birthplan.myBirthPreferences')}</h1>
+    <div class="pv-meta">${I18n.t('tool.birthplan.generatedOn', { date: I18n.fmt.dateLong(Date.now()) })}</div>
     ${rows}
     ${notesHtml}
-    <div class="pv-footer">Pregnancy &amp; Birth Guide · Evidence-based · Private &amp; offline</div>`;
+    <div class="pv-footer">${t('tool.birthplan.pregnancyBirthGuideEvidenceBased')}</div>`;
   window.print();
 }
 
 // ═══════════════════════════════════════════════════════
 // 10. VISIT NOTES (APPOINTMENT NOTES)
 // ═══════════════════════════════════════════════════════
-let appointments = JSON.parse(localStorage.getItem('appt-notes') || '[]');
+let appointments = migrateAppointments(JSON.parse(localStorage.getItem('appt-notes') || '[]'));
 let _editApptId = null;
 
-const APPT_TYPES = [
-  'OB – Routine', 'OB – L&D Triage / Unscheduled', 'MFM Consultation',
-  'MFM Follow-up', 'Endocrinology', 'Cardiology', 'Nephrology',
-  'Ultrasound', 'Non-Stress Test (NST)', 'Lactation Consult',
-  'Postpartum – 2 weeks', 'Postpartum – 6 weeks',
-  'Pediatrician – 2–5 days', 'Pediatrician – 2 weeks',
-  'Pediatrician – 2 months', 'Family Doctor', 'Other',
-];
+// Appointment types are stored as stable IDS. Before i18n the <option>
+// elements carried no value attribute, so the visible English text WAS the
+// stored value — translating it would have silently rewritten saved data.
+const APPT_TYPE_KEY = {
+  'ob-routine': 'obRoutine', 'ob-triage': 'obTriage', 'mfm-consult': 'mfmConsult',
+  'mfm-followup': 'mfmFollowup', 'endo': 'endo', 'cardio': 'cardio', 'nephro': 'nephro',
+  'ultrasound': 'ultrasound', 'nst': 'nst', 'lactation': 'lactation', 'pp-2wk': 'pp2wk',
+  'pp-6wk': 'pp6wk', 'peds-2-5d': 'peds25d', 'peds-2wk': 'peds2wk', 'peds-2mo': 'peds2mo',
+  'family': 'family', 'other': 'other',
+};
+
+const APPT_TYPE_LEGACY = {
+  'OB \u2013 Routine': 'ob-routine',
+  'OB \u2013 L&D Triage / Unscheduled': 'ob-triage',
+  'MFM Consultation': 'mfm-consult',
+  'MFM Follow-up': 'mfm-followup',
+  'Endocrinology': 'endo',
+  'Cardiology': 'cardio',
+  'Nephrology': 'nephro',
+  'Ultrasound': 'ultrasound',
+  'Non-Stress Test (NST)': 'nst',
+  'Lactation Consult': 'lactation',
+  'Postpartum \u2013 2 weeks': 'pp-2wk',
+  'Postpartum \u2013 6 weeks': 'pp-6wk',
+  'Pediatrician \u2013 2\u20135 days': 'peds-2-5d',
+  'Pediatrician \u2013 2 weeks': 'peds-2wk',
+  'Pediatrician \u2013 2 months': 'peds-2mo',
+  'Family Doctor': 'family',
+  'Other': 'other',
+};
+
+// Convert visits saved before i18n. Runs once, then the flag short-circuits.
+function migrateAppointments(list) {
+  if (localStorage.getItem('appt-notes-v2') === '1') return list;
+  const out = (list || []).map(a => {
+    const t = a && a.type;
+    return Object.assign({}, a, {
+      type: Object.prototype.hasOwnProperty.call(APPT_TYPE_LEGACY, t) ? APPT_TYPE_LEGACY[t] : t
+    });
+  });
+  localStorage.setItem('appt-notes', JSON.stringify(out));
+  localStorage.setItem('appt-notes-v2', '1');
+  return out;
+}
+
+// Unknown or legacy ids fall through as their stored text rather than vanishing.
+function apptTypeLabel(id) {
+  if (!id) return I18n.t('tool.appts.untitledVisit');
+  const k = APPT_TYPE_KEY[id];
+  return k ? I18n.t('apptType.' + k) : id;
+}
 
 TOOL_INITS['tool-appts'] = initAppts;
 
@@ -1097,7 +1168,7 @@ function initAppts() {
   if (!el) return;
   el.innerHTML = `
     <div style="padding:12px 16px">
-      <button class="big-action-btn btn-navy" onclick="openApptModal(null)">+ Add Visit</button>
+      <button class="big-action-btn btn-navy" onclick="openApptModal(null)">${t('tool.appts.addVisit')}</button>
     </div>
     <div id="appts-list"></div>
     <div style="height:16px"></div>`;
@@ -1114,7 +1185,7 @@ function renderApptsList() {
   const sorted = [...appointments].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
   el.innerHTML = sorted.map((appt, i) => {
     const d = appt.date ? new Date(appt.date + 'T12:00:00') : null;
-    const month = d ? d.toLocaleDateString([], { month: 'short' }) : '—';
+    const month = d ? d.toLocaleDateString(I18n.lang === 'ar' ? 'ar-u-nu-latn' : I18n.lang, { month: 'short' }) : '—';
     const day = d ? d.getDate() : '—';
     const preview = appt.questions ? appt.questions.slice(0, 60) + (appt.questions.length > 60 ? '…' : '') : 'No questions added';
     return `
@@ -1125,21 +1196,21 @@ function renderApptsList() {
             <div class="adb-day">${day}</div>
           </div>
           <div class="appt-info">
-            <div class="appt-type-label">${appt.type || 'Visit'}</div>
+            <div class="appt-type-label">${escHtml(apptTypeLabel(appt.type))}</div>
             <div class="appt-preview">${preview}</div>
           </div>
           <svg class="appt-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
         </div>
         <div class="appt-body">
-          <div class="appt-sub-label">Questions to ask</div>
-          <div style="font-size:13.5px;color:var(--ink);white-space:pre-wrap;line-height:1.6">${appt.questions || '<span style="color:var(--ink-soft)">None added</span>'}</div>
-          <div class="appt-sub-label" style="margin-top:14px">Notes from visit</div>
-          <div style="font-size:13.5px;color:var(--ink);white-space:pre-wrap;line-height:1.6">${appt.notes || '<span style="color:var(--ink-soft)">None added</span>'}</div>
+          <div class="appt-sub-label">${t('tool.appts.questionsToAsk')}</div>
+          <div style="font-size:13.5px;color:var(--ink);white-space:pre-wrap;line-height:1.6">${appt.questions || ('<span style="color:var(--ink-soft)">' + t('tool.appts.noneAdded') + '</span>')}</div>
+          <div class="appt-sub-label" style="margin-top:14px">${t('tool.appts.notesFromVisit')}</div>
+          <div style="font-size:13.5px;color:var(--ink);white-space:pre-wrap;line-height:1.6">${appt.notes || ('<span style="color:var(--ink-soft)">' + t('tool.appts.noneAdded') + '</span>')}</div>
           <div class="btn-row" style="margin-top:14px;padding:0">
             <button class="btn-sm" onclick="event.stopPropagation();openApptModal('${appt.id}')"
-              style="background:var(--teal-faint);color:var(--teal)">Edit</button>
+              style="background:var(--teal-faint);color:var(--teal)">${t('tool.appts.edit')}</button>
             <button class="btn-sm" onclick="event.stopPropagation();deleteAppt('${appt.id}')"
-              style="background:#fff3f3;color:#c44">Delete</button>
+              style="background:#fff3f3;color:#c44">${t('tool.appts.delete')}</button>
           </div>
         </div>
       </div>`;
@@ -1154,7 +1225,8 @@ function toggleApptCard(cardId) {
 function openApptModal(id) {
   _editApptId = id;
   const appt = id ? appointments.find(a => a.id === id) : null;
-  document.getElementById('appt-modal-title').textContent = id ? 'Edit Visit' : 'Add Visit';
+  document.getElementById('appt-modal-title').textContent =
+    I18n.t(id ? 'tool.appts.editVisit' : 'tool.appts.addVisit');
   document.getElementById('appt-type').value = appt ? appt.type : '';
   document.getElementById('appt-date').value = appt ? (appt.date || '') : new Date().toISOString().split('T')[0];
   document.getElementById('appt-questions').value = appt ? (appt.questions || '') : '';
@@ -1163,7 +1235,7 @@ function openApptModal(id) {
 }
 
 function saveAppt() {
-  const type = document.getElementById('appt-type').value || 'Visit';
+  const type = document.getElementById('appt-type').value || '';
   const date = document.getElementById('appt-date').value;
   const questions = document.getElementById('appt-questions').value.trim();
   const notes = document.getElementById('appt-notes-field').value.trim();
@@ -1187,7 +1259,7 @@ function deleteAppt(id) {
   appointments = appointments.filter(a => a.id !== id);
   localStorage.setItem('appt-notes', JSON.stringify(appointments));
   initAppts();
-  showToast('Visit deleted');
+  showToast(t('tool.appts.visitDeleted'));
 }
 
 // ═══════════════════════════════════════════════════════

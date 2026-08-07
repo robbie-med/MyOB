@@ -13,20 +13,27 @@ An evidence-based, fully offline-capable Progressive Web App for pregnant patien
 - **Print-ready birth plan** — clean layout for printing or saving as PDF
 - **Tap-to-call / tap-to-text** saved care team contacts
 - **No ads, no tracking, no data collection** — everything stays on the device
+- **Multilingual** — English, Spanish, French, Korean, Arabic (RTL), Russian, Chinese, Zomi.
+  First-run picker prompts in every language; English is the fallback for any
+  untranslated string. See `TRANSLATING.md`.
 
 ## File Structure
 
 ```
 index.html      HTML shell — all pages and modals, no inline JS or CSS
 styles.css      All styles, including tool UI and dark mode
-content.js      Guide content, navigation, search, My Info, PWA logic
+content.js      Card structure, navigation, search, My Info, PWA logic
 tools.js        All 10 interactive tools
+i18n/i18n.js    i18n runtime (locale detect/load, t(), search folding, formatting)
+i18n/locale.*.js  One file per language; en is the fallback layer
 sw.js           Service worker (offline caching, cache-first strategy)
 manifest.json   PWA metadata (name, icons, theme color)
 README.md       This file
 ```
 
-To update content, edit `content.js` (the `CONTENT` object at the top).
+To update content, edit `i18n/locale.en.js` (the `content` object, keyed by card
+id) — and mirror the change into the other locale files. Card icons/colors live
+in `CONTENT_STRUCTURE` in `content.js`.
 After any change, bump the cache version in `sw.js` (`CACHE_NAME = 'birth-guide-v3'` etc.) so users get the update.
 
 ## Deploy to GitHub Pages
