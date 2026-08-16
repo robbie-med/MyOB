@@ -1,756 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1d4e4e">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Obiana">
-<meta name="description" data-i18n-content="app.description" content="Evidence-based pregnancy, birth and newborn guide in 17 languages. Free, open source, and works offline.">
-<title data-i18n="app.title">Pregnancy Handbook</title>
-<link rel="icon" href="./favicon.ico" sizes="32x32">
-<link rel="icon" href="./favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="./apple-touch-icon.png">
-<link rel="manifest" href="./manifest.json">
-<link rel="stylesheet" href="./styles.css?v=60">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<meta name="robots" content="noindex">
+<title>MyOB is now Obiana</title>
+<link rel="canonical" href="https://obiana.app/">
+<style>
+  :root {
+    --teal: #1d4e4e; --teal-mid: #2a7070; --bg: #f7fafa; --card: #ffffff;
+    --ink: #1a2424; --ink-mid: #3d4e4e; --ink-soft: #657575; --rule: #dce8e8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #111c1c; --card: #192828; --ink: #ddeaea; --ink-mid: #a8c0c0;
+            --ink-soft: #769292; --rule: #253535; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 34rem; margin: 0 auto; padding: 28px 20px 56px; }
+  .mark {
+    display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .09em;
+    text-transform: uppercase; color: var(--teal-mid); margin-bottom: 14px;
+  }
+  h1 { font-size: 28px; line-height: 1.2; margin: 0 0 14px; }
+  p { margin: 0 0 14px; color: var(--ink-mid); }
+  .go {
+    display: block; text-align: center; text-decoration: none;
+    background: var(--teal); color: #fff; font-weight: 700; font-size: 17px;
+    padding: 16px; border-radius: 12px; margin: 22px 0 10px;
+  }
+  .go small { display: block; font-weight: 400; font-size: 13px; opacity: .85; margin-top: 3px; }
+  ul { margin: 0 0 14px; padding-left: 20px; color: var(--ink-mid); }
+  li { margin-bottom: 6px; }
+  .card {
+    background: var(--card); border: 1px solid var(--rule);
+    border-radius: 12px; padding: 16px; margin: 24px 0 0;
+  }
+  .card h2 { font-size: 16px; margin: 0 0 8px; }
+  button {
+    font: inherit; font-weight: 700; width: 100%; padding: 14px;
+    border-radius: 10px; border: 1.5px solid var(--teal); cursor: pointer;
+    background: var(--card); color: var(--teal);
+  }
+  button:disabled { opacity: .55; cursor: default; }
+  .steps { font-size: 14px; color: var(--ink-soft); margin-top: 10px; }
+  .status { margin-top: 10px; font-size: 14px; font-weight: 600; color: var(--teal-mid); min-height: 1.2em; }
+  footer { margin-top: 30px; font-size: 13px; color: var(--ink-soft); }
+  footer a { color: var(--teal-mid); }
+  :focus-visible { outline: 3px solid var(--teal-mid); outline-offset: 2px; }
+</style>
 </head>
 <body>
-<div id="app">
+<main class="wrap">
 
-<!-- Offline banner -->
-<div id="offline-banner" data-i18n="app.offlineBanner">⚠ You're offline. All content still available</div>
+  <span class="mark">This app has moved</span>
+  <h1>MyOB is now Obiana</h1>
 
-<!-- Header -->
-<div id="header">
-  <div class="header-inner">
-    <div class="header-titles">
-      <div class="header-title" data-i18n="app.title">Pregnancy Handbook</div>
-    </div>
-    <button id="install-btn" onclick="installPWA()" title="Add to Phone" aria-label="Add to Phone"
-            data-i18n-title="install.addToPhone" data-i18n-aria-label="install.addToPhone">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 15V3m0 12l-4-4m4 4l4-4"/><path d="M2 17v3a2 2 0 002 2h16a2 2 0 002-2v-3"/></svg>
-      <span data-i18n="install.addToPhone">Add to Phone</span>
-    </button>
-    <button id="theme-btn" onclick="toggleDarkMode()" title="Toggle dark mode" aria-label="Toggle dark mode"
-            data-i18n-title="theme.toggle" data-i18n-aria-label="theme.toggle">
-      <svg id="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-    </button>
-    <button id="lang-btn" aria-label="Change language" aria-haspopup="true" aria-expanded="false"
-            data-i18n-aria-label="lang.change" data-i18n-title="lang.change" title="Change language">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 010 18a15 15 0 010-18z"/></svg>
-    </button>
-  </div>
-  <div id="search-bar">
-    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input id="search-input" type="search" placeholder="Search all topics…" data-i18n-placeholder="app.searchPlaceholder" autocomplete="off" autocorrect="off" spellcheck="false">
-    <button id="search-clear" onclick="clearSearch()">✕</button>
-  </div>
-</div>
+  <p>The guide is the same, and it has kept growing. It now lives at a new
+     address, so please open it there and add it to your phone again.</p>
 
-<!-- Language popover, opened from the globe in the header -->
-<div id="lang-pop" role="dialog" aria-modal="false" aria-labelledby="lang-pop-heading" hidden>
-  <div class="lang-pop-title" id="lang-pop-heading" data-i18n="lang.change">Change language</div>
-  <div class="lang-pop-grid" id="lang-pop-grid"></div>
-</div>
+  <a class="go" href="https://obiana.app/">
+    Open obiana.app
+    <small>Then use Add to Home Screen, as you did before</small>
+  </a>
 
-<!-- First-run language picker. Every option is labelled in its OWN language,
-     so a speaker of any supported language sees an instruction they can read
-     without first understanding English. -->
-<div id="lang-picker" role="dialog" aria-modal="true" aria-labelledby="lang-picker-heading" hidden>
-  <div class="lang-picker-sheet">
-    <div class="lang-picker-globe" aria-hidden="true">🌐</div>
-    <div class="lang-picker-heading" id="lang-picker-heading">Tap your language</div>
-    <div class="lang-picker-grid" id="lang-picker-grid"></div>
-  </div>
-</div>
+  <p>What is new since you installed this one:</p>
+  <ul>
+    <li>Export and import, so your notes and logs move with you</li>
+    <li>You can suggest corrections and better translations from inside the app</li>
+    <li>More languages, and more of the guide translated into them</li>
+    <li>New sections, including nausea, preeclampsia and mental health</li>
+  </ul>
 
-<!-- Shown once, straight after the language is chosen. The guide describes US
-     prenatal care specifically, and that has to be said before anyone reads it
-     as general medical advice. -->
-<div id="us-notice" role="dialog" aria-modal="true" aria-labelledby="us-notice-title" hidden>
-  <div class="us-notice-sheet">
-    <div class="us-notice-flag" aria-hidden="true"><img src="./flags/us.svg" alt=""></div>
-    <div class="us-notice-title" id="us-notice-title" data-i18n="usNotice.title">Care in the United States</div>
-    <div class="us-notice-body" data-i18n="usNotice.body">This guide describes prenatal care as it is provided in the United States, and is written for mothers receiving their care here. Prenatal care differs a great deal between countries. Visit schedules, tests and recommendations elsewhere may not match what you read here. If you are receiving care in another country, this app probably isn’t for you.</div>
-    <button class="us-notice-btn" id="us-notice-ok" data-i18n="usNotice.continue">I understand</button>
-  </div>
-</div>
-
-<!-- Machine-translation disclosure (hidden for clinician-reviewed locales) -->
-<div id="translation-notice" role="status" hidden></div>
-
-<!-- Search results -->
-<div id="search-results-page">
-  <div class="search-results-header" id="search-results-header"></div>
-  <div id="search-results-list"></div>
-</div>
-
-<!-- Main content -->
-<div id="content">
-
-  <!-- ══════════ HOME ══════════ -->
-  <div id="page-home" class="page active">
-    <div class="home-hero">
-      <div class="home-hero-title" data-i18n="home.heroTitle" data-i18n-html>Know what to<br>expect. Ask great<br>questions.</div>
-      <div class="home-hero-desc" data-i18n="home.heroDesc">From your first prenatal visit through delivery and recovery, Obiana keeps everything in one place.</div>
-    </div>
-
-    <div class="quick-nav">
-      <button class="qnav-btn" onclick="navigate('pregnancy')">
-        <div class="qnav-icon" style="background:var(--teal-light)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6v6l4 2"/></svg>
-        </div>
-        <span class="qnav-label" data-i18n="nav.prenatal" data-i18n-html>Prenatal<br>Visits</span>
-      </button>
-      <button class="qnav-btn" onclick="navigate('labor')">
-        <div class="qnav-icon" style="background:var(--gold-light)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        </div>
-        <span class="qnav-label" data-i18n="nav.labor" data-i18n-html>Labor &amp;<br>Delivery</span>
-      </button>
-      <button class="qnav-btn" onclick="navigate('recovery')">
-        <div class="qnav-icon" style="background:var(--rose-light)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--rose)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-        </div>
-        <span class="qnav-label" data-i18n="nav.recovery" data-i18n-html>Postpartum<br>Recovery</span>
-      </button>
-      <button class="qnav-btn" onclick="navigate('baby')">
-        <div class="qnav-icon" style="background:var(--navy-light)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg>
-        </div>
-        <span class="qnav-label" data-i18n="nav.baby" data-i18n-html>Your<br>Newborn</span>
-      </button>
-      <button class="qnav-btn" onclick="navigate('tools')">
-        <div class="qnav-icon" style="background:var(--plum-light)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--plum)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 9l3 3 5-5"/></svg>
-        </div>
-        <span class="qnav-label" data-i18n="nav.toolsTrackers" data-i18n-html>Tools &amp;<br>Trackers</span>
-      </button>
-      <button class="qnav-btn" onclick="navigate('myinfo')">
-        <div class="qnav-icon" style="background:var(--navy-light)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 9.91a16 16 0 006.16 6.16l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-        </div>
-        <span class="qnav-label" data-i18n="home.myInfoContacts" data-i18n-html>My Info &amp;<br>Contacts</span>
-      </button>
-    </div>
-
-    <div class="info-strip" onclick="navigate('myinfo')">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 9.91a16 16 0 006.16 6.16l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-      <div class="info-strip-text">
-        <div class="info-strip-title" data-i18n="home.saveYourCareTeamContacts">Save Your Care Team Contacts</div>
-        <div class="info-strip-sub" data-i18n="home.tapToCallOrText">Tap to call or text directly from the app</div>
-      </div>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
-    </div>
-
-    <div class="qref-card">
-      <div class="qref-header">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c44" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="1" fill="currentColor" stroke="none"/></svg>
-        <span class="qref-header-title" data-i18n="home.callYourDoctorIf">Call Your Doctor If…</span>
-      </div>
-      <div class="qref-body">
-        <div class="qref-cols">
-          <div>
-            <div class="qref-col-title teal" data-i18n="home.duringPregnancy">During Pregnancy</div>
-            <ul class="qref-list">
-              <li data-i18n="home.vaginalBleeding">Vaginal bleeding</li>
-              <li data-i18n="home.fluidGushingOrTrickling">Fluid gushing or trickling</li>
-              <li data-i18n="home.babyNotMovingNormally">Baby not moving normally</li>
-              <li data-i18n="home.severeHeadache">Severe headache</li>
-              <li data-i18n="home.visionChanges">Vision changes</li>
-              <li data-i18n="home.suddenSwellingOfFaceHands">Sudden swelling of face/hands</li>
-              <li data-i18n="home.fever1004F" data-i18n-html>Fever &gt;100.4°F</li>
-              <li data-i18n="home.contractionsBefore37Weeks">Contractions before 37 weeks</li>
-            </ul>
-          </div>
-          <div>
-            <div class="qref-col-title rose" data-i18n="home.afterDelivery">After Delivery</div>
-            <ul class="qref-list">
-              <li data-i18n="home.soaking1PadHr2" data-i18n-html>Soaking &gt;1 pad/hr × 2 hrs</li>
-              <li data-i18n="home.fever1004F" data-i18n-html>Fever &gt;100.4°F</li>
-              <li data-i18n="home.woundOpensOrOozes">Wound opens or oozes</li>
-              <li data-i18n="home.severeHeadache">Severe headache</li>
-              <li data-i18n="home.legRednessSwelling">Leg redness/swelling</li>
-              <li data-i18n="home.chestPainOrTroubleBreathing">Chest pain or trouble breathing</li>
-              <li data-i18n="home.thoughtsOfSelfHarm">Thoughts of self-harm</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div style="height:16px"></div>
-  </div>
-  <!-- END HOME -->
-
-  <!-- ══════════ PREGNANCY ══════════ -->
-  <div id="page-pregnancy" class="page">
-    <div class="section-hero">
-      <div class="hero-title" data-i18n="pregnancy.prenatalVisitsPregnancy" data-i18n-html>Prenatal Visits<br>&amp; Pregnancy</div>
-      <div class="hero-desc" data-i18n="pregnancy.aVisitByVisitGuide">A visit-by-visit guide, cervical exams explained, exercise during pregnancy, and what to ask at each stage.</div>
-    </div>
-    <div class="cards" id="cards-pregnancy"></div>
+  <!-- Saved data lives per website address, so it does not follow you to the
+       new one on its own. Exporting here and importing there is the only way
+       to carry it across, and telling someone to reinstall without saying so
+       would quietly lose their notes. -->
+  <div class="card" id="data-card" hidden>
+    <h2>Bring your saved information with you</h2>
+    <p>Anything you saved here stays on this phone and does not move by itself.
+       Save a copy first, then load it into Obiana.</p>
+    <button id="export">Save my information</button>
+    <div class="status" id="status" role="status"></div>
+    <p class="steps">In Obiana, open <strong>My Info</strong> and choose
+       <strong>Import Data</strong>, then pick the file you just saved.</p>
   </div>
 
-  <!-- ══════════ LABOR ══════════ -->
-  <div id="page-labor" class="page">
-    <div class="section-hero gold-hero">
-      <div class="hero-title" data-i18n="labor.laborDelivery" data-i18n-html>Labor &amp;<br>Delivery</div>
-      <div class="hero-desc" data-i18n="labor.signsOfLaborWhatHappens">Signs of labor, what happens when you arrive, pain management options, C-section, and high-risk care.</div>
-    </div>
-    <div class="cards" id="cards-labor"></div>
-  </div>
+  <footer>
+    Free and open source.
+    <a href="https://github.com/robbie-med/obiana">View the source</a>.
+  </footer>
 
-  <!-- ══════════ RECOVERY ══════════ -->
-  <div id="page-recovery" class="page">
-    <div class="section-hero rose-hero">
-      <div class="hero-title" data-i18n="recovery.postpartumRecovery" data-i18n-html>Postpartum<br>Recovery</div>
-      <div class="hero-desc" data-i18n="recovery.physicalHealingMoodAndPpd">Physical healing, mood and PPD, pelvic rest, returning to exercise, and when to go home.</div>
-    </div>
-    <div class="cards" id="cards-recovery"></div>
-  </div>
+</main>
 
-  <!-- ══════════ BABY ══════════ -->
-  <div id="page-baby" class="page">
-    <div class="section-hero navy-hero">
-      <div class="hero-title" data-i18n="baby.yourNewborn" data-i18n-html>Your<br>Newborn</div>
-      <div class="hero-desc" data-i18n="baby.breastfeedingFormulaCordCareSafe">Breastfeeding, formula, cord care, safe sleep, normal newborn appearance, and follow-up appointments.</div>
-    </div>
-    <div class="cards" id="cards-baby"></div>
-  </div>
+<script>
+// The keys the old app wrote. Reading one that was never set is harmless, so
+// the newer ones are listed too: this page has to work for someone who last
+// opened the app a year ago and for someone who opened it yesterday.
+var KEYS = [
+  'birth-guide-info', 'kick-history', 'contractions', 'feed-log',
+  'diaper-log', 'jaundice-birth-date', 'bp-log', 'weight-log',
+  'weight-profile', 'epds-history', 'birth-plan', 'birth-plan-notes', 'appt-notes',
+  'nausea-log', 'nausea-snacks', 'nausea-week', 'nausea-tried',
+  'myob.epdsLang', 'birth-plan-v2', 'appt-notes-v2',
+  'myob.lang', 'dark-mode', 'myob.usNoticeSeen'
+];
 
-  <!-- ══════════ FAQ ══════════ -->
-  <div id="page-faq" class="page">
-    <div class="section-hero plum-hero">
-      <div class="hero-title" data-i18n="faq.faqCommonMyths" data-i18n-html>FAQ &amp;<br>Common Myths</div>
-      <div class="hero-desc" data-i18n="faq.evidenceBasedAnswersToThe">Evidence-based answers to the most common questions, including things you've heard from family, friends, and the internet.</div>
-    </div>
-    <div class="cards" id="cards-faq"></div>
-  </div>
+function read(k) {
+  try { return localStorage.getItem(k); } catch (e) { return null; }   // private mode throws
+}
 
-  <!-- ══════════ MY INFO ══════════ -->
-  <div id="page-myinfo" class="page">
-    <div class="myinfo-hero">
-      <div class="myinfo-hero-title" data-i18n="myinfo.myCareTeamKeyDetails" data-i18n-html>My Care Team &amp;<br>Key Details</div>
-      <div class="myinfo-hero-sub" data-i18n="myinfo.savedOnYourPhoneTap">Saved on your phone · Tap to call or text</div>
-    </div>
-    <div class="form-section mt16" id="contacts-form">
-      <div class="form-section-title" data-i18n="myinfo.careTeamContacts">Care Team Contacts</div>
-    </div>
-    <div class="form-section mt16" id="details-form">
-      <div class="form-section-title navy" data-i18n="myinfo.myPregnancyDetails">My Pregnancy Details</div>
-    </div>
-    <div class="form-section mt16">
-      <div class="form-section-title" data-i18n="myinfo.questionsForMyDoctor">Questions for My Doctor</div>
-      <div style="padding:12px 16px">
-        <textarea id="notes-field" rows="5" data-i18n-placeholder="myinfo.notesPlaceholder" placeholder="Write questions here as you think of them…" style="width:100%;border:1.5px solid var(--rule);border-radius:var(--radius-sm);padding:10px 12px;font-family:var(--font-sans);font-size:14px;color:var(--ink);background:var(--bg);outline:none;resize:vertical;transition:border-color .2s;line-height:1.5"></textarea>
-      </div>
-    </div>
-    <div class="myinfo-save-bar">
-      <button id="save-btn" onclick="saveInfo()" data-i18n="myinfo.saveMyInformation">Save My Information</button>
-      <button id="export-btn" onclick="exportData()" data-i18n="myinfo.exportData">Export Data</button>
-    </div>
-  </div>
-  <!-- END MY INFO -->
+function collect() {
+  var data = {}, n = 0;
+  for (var i = 0; i < KEYS.length; i++) {
+    var v = read(KEYS[i]);
+    if (v === null) continue;
+    // Same shape the app's own export writes, so its import accepts this file.
+    try { data[KEYS[i]] = JSON.parse(v); } catch (e) { data[KEYS[i]] = v; }
+    n++;
+  }
+  return { data: data, count: n };
+}
 
-  <!-- ══════════ TOOLS OVERVIEW ══════════ -->
-  <div id="page-tools" class="page">
-    <div class="section-hero plum-hero">
-      <div class="hero-title" data-i18n="tools.trackersPlanners" data-i18n-html>Trackers &amp;<br>Planners</div>
-      <div class="hero-desc" data-i18n="tools.timeContractionsCountKicksLog">Time contractions, count kicks, log feedings and diapers, track blood pressure, plan your birth, and more.</div>
-    </div>
+// Only offer the export if there is something to export.
+var found = collect();
+if (found.count) document.getElementById('data-card').hidden = false;
 
-    <div class="tool-section-label" data-i18n="tools.feelingWell">Feeling Well</div>
-    <div class="tool-grid">
-      <button class="tool-card-btn" onclick="navigate('tool-nausea')">
-        <div class="tool-card-icon" style="background:var(--rose-light)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--rose)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 15s1.5-1.5 4-1.5 4 1.5 4 1.5"/><circle cx="9" cy="10" r="0.9" fill="var(--rose)" stroke="none"/><circle cx="15" cy="10" r="0.9" fill="var(--rose)" stroke="none"/></svg>
-        </div>
-        <div class="tool-card-name" data-i18n="tools.nauseaHelper">Nausea &amp; Eating</div>
-        <div class="tool-card-desc" data-i18n="tools.nauseaHelperDesc">Snack rhythm · What to try · Acupressure</div>
-      </button>
-      <button class="tool-card-btn" onclick="navigate('tool-nausealog')">
-        <div class="tool-card-icon" style="background:var(--plum-light)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--plum)" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
-        </div>
-        <div class="tool-card-name" data-i18n="tools.nauseaLog">Nausea Log</div>
-        <div class="tool-card-desc" data-i18n="tools.nauseaLogDesc">Rate it · Record what you tried · See what helps you</div>
-      </button>
-    </div>
+document.getElementById('export').addEventListener('click', function () {
+  var out = collect();
+  if (!out.count) {
+    document.getElementById('status').textContent = 'Nothing saved on this phone.';
+    return;
+  }
+  try {
+    var blob = new Blob([JSON.stringify(out.data, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'birth-guide-' + new Date().toISOString().split('T')[0] + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    document.getElementById('status').textContent =
+      'Saved. Now open obiana.app and use Import Data.';
+  } catch (e) {
+    document.getElementById('status').textContent =
+      'Could not save the file. Try opening this page in your normal browser.';
+  }
+});
 
-    <div class="tool-section-label" data-i18n="tools.labor">Labor</div>
-    <div class="tool-grid">
-      <button class="tool-card-btn" onclick="navigate('tool-kick')">
-        <div class="tool-card-icon" style="background:var(--teal-light)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-        </div>
-        <div class="tool-card-name" data-i18n="tools.kickCounter">Kick Counter</div>
-        <div class="tool-card-desc" data-i18n="tools.10MovesIn2Hours" data-i18n-html>10 moves in 2 hours · log sessions &amp; history</div>
-      </button>
-      <button class="tool-card-btn" onclick="navigate('tool-contractions')">
-        <div class="tool-card-icon" style="background:var(--gold-light)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        </div>
-        <div class="tool-card-name" data-i18n="tools.contractionTimer">Contraction Timer</div>
-        <div class="tool-card-desc" data-i18n="tools.tapStartStop51">Tap start/stop · 5-1-1 alert · When to go in</div>
-      </button>
-    </div>
-
-    <div class="tool-section-label" data-i18n="tools.newbornPostpartum" data-i18n-html>Newborn &amp; Postpartum</div>
-    <div class="tool-grid">
-      <button class="tool-card-btn" onclick="navigate('tool-feeding')">
-        <div class="tool-card-icon" style="background:var(--rose-light)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--rose)" stroke-width="2"><path d="M12 2a5 5 0 015 5c0 2.5-2 4.5-2 7H9c0-2.5-2-4.5-2-7a5 5 0 015-5z"/><path d="M9 20h6"/><path d="M10 16v4"/><path d="M14 16v4"/></svg>
-        </div>
-        <div class="tool-card-name" data-i18n="tools.feedingLog">Feeding Log</div>
-        <div class="tool-card-desc" data-i18n="tools.breastOrBottle24Hr">Breast or bottle · 24-hr count · Alerts if low</div>
-      </button>
-      <button class="tool-card-btn" onclick="navigate('tool-diapers')">
-        <div class="tool-card-icon" style="background:var(--navy-light)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><path d="M3 3h18v18H3z" rx="2"/><path d="M3 9h5l3 6 3-6h5"/></svg>
-        </div>
-        <div class="tool-card-name" data-i18n="tools.diaperLog">Diaper Log</div>
-        <div class="tool-card-desc" data-i18n="tools.wetDirtyCountDailyTotals" data-i18n-html>Wet &amp; dirty count · Daily totals for the doctor</div>
-      </button>
-      <button class="tool-card-btn" onclick="navigate('tool-jaundice')">
-        <div class="tool-card-icon" style="background:var(--gold-light)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        </div>
-        <div class="tool-card-name" data-i18n="tools.jaundiceTracker">Jaundice Tracker</div>
-        <div class="tool-card-desc" data-i18n="tools.dayByDayGuidanceFrom">Day-by-day guidance from birth</div>
-      </button>
-      <button class="tool-card-btn" onclick="navigate('tool-mood')">
-        <div class="tool-card-icon" style="background:var(--plum-light)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--plum)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r="1" fill="currentColor" stroke="none"/></svg>
-        </div>
-        <div class="tool-card-name" data-i18n="tools.moodCheckIn">Mood Check-In</div>
-        <div class="tool-card-desc" data-i18n="tools.epdsScreenWeeklyTrackingFlags">EPDS screen · Weekly tracking · Flags concerns</div>
-      </button>
-    </div>
-
-    <div class="tool-section-label" data-i18n="tools.pregnancyMonitoring">Pregnancy Monitoring</div>
-    <div class="tool-grid">
-      <button class="tool-card-btn" onclick="navigate('tool-bp')">
-        <div class="tool-card-icon" style="background:#ffebee">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#c44" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-        </div>
-        <div class="tool-card-name" data-i18n="tools.bloodPressure">Blood Pressure</div>
-        <div class="tool-card-desc" data-i18n="tools.logReadingsFlags14090">Log readings · Flags ≥ 140/90 automatically</div>
-      </button>
-      <button class="tool-card-btn" onclick="navigate('tool-weight')">
-        <div class="tool-card-icon" style="background:var(--teal-light)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><path d="M12 2a3 3 0 013 3H9a3 3 0 013-3z"/><rect x="2" y="5" width="20" height="16" rx="2"/><path d="M12 12v4"/><path d="M8 14h8"/></svg>
-        </div>
-        <div class="tool-card-name" data-i18n="tools.weightTracker">Weight Tracker</div>
-        <div class="tool-card-desc" data-i18n="tools.logByWeekIomGain">Log by week · IOM gain guidelines for your BMI</div>
-      </button>
-    </div>
-
-    <div class="tool-section-label" data-i18n="tools.planning">Planning</div>
-    <div class="tool-grid">
-      <button class="tool-card-btn" onclick="navigate('tool-birthplan')">
-        <div class="tool-card-icon" style="background:var(--teal-light)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/><polyline points="9 9 10 9"/></svg>
-        </div>
-        <div class="tool-card-name" data-i18n="tools.birthPlanBuilder">Birth Plan Builder</div>
-        <div class="tool-card-desc" data-i18n="tools.guidedChoicesShareableOnePage">Guided choices · Shareable one-page summary</div>
-      </button>
-      <button class="tool-card-btn" onclick="navigate('tool-appts')">
-        <div class="tool-card-icon" style="background:var(--navy-light)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        </div>
-        <div class="tool-card-name" data-i18n="tools.visitNotes">Visit Notes</div>
-        <div class="tool-card-desc" data-i18n="tools.questionsBeforeNotesDuringEvery">Questions before · Notes during every visit</div>
-      </button>
-    </div>
-
-    <div class="tool-section-label" data-i18n="tools.helpUsImprove">Help Us Improve</div>
-    <div class="tool-grid">
-      <button class="tool-card-btn" onclick="navigate('tool-i18n')">
-        <div class="tool-card-icon" style="background:var(--teal-light)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 010 18a15 15 0 010-18z"/></svg>
-        </div>
-        <div class="tool-card-name" data-i18n="tools.translationHelper">Translation Helper</div>
-        <div class="tool-card-desc" data-i18n="tools.reviewSuggestWording">Review wording · Suggest a better translation</div>
-      </button>
-      <button class="tool-card-btn" onclick="navigate('tool-improve')">
-        <div class="tool-card-icon" style="background:var(--gold-light)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        </div>
-        <div class="tool-card-name" data-i18n="tools.improveGuide">Help Improve This Guide</div>
-        <div class="tool-card-desc" data-i18n="tools.shareCustomAsk">Share how it is done in your culture · Ask about anything unclear</div>
-      </button>
-    </div>
-
-    <!-- AGPL section 13: a hosted copy has to offer its source to the people
-         using it, so this link is a licence obligation, not decoration. -->
-    <div class="source-note">
-      <span data-i18n="about.openSource">Free and open source. Fork it, keep it free.</span>
-      <a href="https://github.com/robbie-med/obiana" target="_blank" rel="noopener"
-         data-i18n="about.viewSource">View source (AGPL-3.0)</a>
-    </div>
-    <div style="height:16px"></div>
-  </div>
-  <!-- END TOOLS OVERVIEW -->
-
-  <!-- ══════════ TOOL: NAUSEA & EATING ══════════ -->
-  <div id="page-tool-nausea" class="page">
-    <div class="tool-back-bar">
-      <button class="tool-back-btn" onclick="navigate('tools')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        <span data-i18n="common.toolsBack">Tools</span>
-      </button>
-      <span class="tool-back-title" data-i18n="toolnausea.nauseaEating">Nausea &amp; Eating</span>
-    </div>
-    <div id="nausea-content"></div>
-  </div>
-
-  <!-- ══════════ TOOL: NAUSEA LOG ══════════ -->
-  <div id="page-tool-nausealog" class="page">
-    <div class="tool-back-bar">
-      <button class="tool-back-btn" onclick="navigate('tools')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        <span data-i18n="common.toolsBack">Tools</span>
-      </button>
-      <span class="tool-back-title" data-i18n="toolnausealog.nauseaLog">Nausea Log</span>
-    </div>
-    <div id="nausealog-content"></div>
-  </div>
-
-  <!-- ══════════ TOOL: KICK COUNTER ══════════ -->
-  <div id="page-tool-kick" class="page">
-    <div class="tool-back-bar">
-      <button class="tool-back-btn" onclick="navigate('tools')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        <span data-i18n="common.toolsBack">Tools</span>
-      </button>
-      <span class="tool-back-title" data-i18n="toolkick.kickCounter">Kick Counter</span>
-    </div>
-    <div id="kick-content"></div>
-  </div>
-
-  <!-- ══════════ TOOL: CONTRACTION TIMER ══════════ -->
-  <div id="page-tool-contractions" class="page">
-    <div class="tool-back-bar">
-      <button class="tool-back-btn" onclick="navigate('tools')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        <span data-i18n="common.toolsBack">Tools</span>
-      </button>
-      <span class="tool-back-title" data-i18n="toolcontractions.contractionTimer">Contraction Timer</span>
-    </div>
-    <div id="cx-content"></div>
-  </div>
-
-  <!-- ══════════ TOOL: FEEDING LOG ══════════ -->
-  <div id="page-tool-feeding" class="page">
-    <div class="tool-back-bar">
-      <button class="tool-back-btn" onclick="navigate('tools')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        <span data-i18n="common.toolsBack">Tools</span>
-      </button>
-      <span class="tool-back-title" data-i18n="toolfeeding.feedingLog">Feeding Log</span>
-    </div>
-    <div id="feed-content"></div>
-  </div>
-
-  <!-- ══════════ TOOL: DIAPER LOG ══════════ -->
-  <div id="page-tool-diapers" class="page">
-    <div class="tool-back-bar">
-      <button class="tool-back-btn" onclick="navigate('tools')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        <span data-i18n="common.toolsBack">Tools</span>
-      </button>
-      <span class="tool-back-title" data-i18n="tooldiapers.diaperLog">Diaper Log</span>
-    </div>
-    <div id="diaper-content"></div>
-  </div>
-
-  <!-- ══════════ TOOL: JAUNDICE TRACKER ══════════ -->
-  <div id="page-tool-jaundice" class="page">
-    <div class="tool-back-bar">
-      <button class="tool-back-btn" onclick="navigate('tools')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        <span data-i18n="common.toolsBack">Tools</span>
-      </button>
-      <span class="tool-back-title" data-i18n="tooljaundice.jaundiceTracker">Jaundice Tracker</span>
-    </div>
-    <div id="jaundice-content"></div>
-  </div>
-
-  <!-- ══════════ TOOL: BLOOD PRESSURE ══════════ -->
-  <div id="page-tool-bp" class="page">
-    <div class="tool-back-bar">
-      <button class="tool-back-btn" onclick="navigate('tools')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        <span data-i18n="common.toolsBack">Tools</span>
-      </button>
-      <span class="tool-back-title" data-i18n="toolbp.bloodPressureLog">Blood Pressure Log</span>
-    </div>
-    <div id="bp-content"></div>
-  </div>
-
-  <!-- ══════════ TOOL: WEIGHT TRACKER ══════════ -->
-  <div id="page-tool-weight" class="page">
-    <div class="tool-back-bar">
-      <button class="tool-back-btn" onclick="navigate('tools')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        <span data-i18n="common.toolsBack">Tools</span>
-      </button>
-      <span class="tool-back-title" data-i18n="toolweight.weightTracker">Weight Tracker</span>
-    </div>
-    <div id="weight-content"></div>
-  </div>
-
-  <!-- ══════════ TOOL: MOOD CHECK-IN ══════════ -->
-  <div id="page-tool-mood" class="page">
-    <div class="tool-back-bar">
-      <button class="tool-back-btn" onclick="navigate('tools')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        <span data-i18n="common.toolsBack">Tools</span>
-      </button>
-      <span class="tool-back-title" data-i18n="toolmood.moodCheckIn">Mood Check-In</span>
-    </div>
-    <div id="mood-content"></div>
-  </div>
-
-  <!-- ══════════ TOOL: BIRTH PLAN ══════════ -->
-  <div id="page-tool-birthplan" class="page">
-    <div class="tool-back-bar">
-      <button class="tool-back-btn" onclick="navigate('tools')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        <span data-i18n="common.toolsBack">Tools</span>
-      </button>
-      <span class="tool-back-title" data-i18n="toolbirthplan.birthPlanBuilder">Birth Plan Builder</span>
-    </div>
-    <div id="birthplan-content"></div>
-  </div>
-
-  <!-- ══════════ TOOL: VISIT NOTES ══════════ -->
-  <div id="page-tool-appts" class="page">
-    <div class="tool-back-bar">
-      <button class="tool-back-btn" onclick="navigate('tools')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        <span data-i18n="common.toolsBack">Tools</span>
-      </button>
-      <span class="tool-back-title" data-i18n="toolappts.visitNotes">Visit Notes</span>
-    </div>
-    <div id="appts-content"></div>
-  </div>
-
-  <!-- ══════════ TOOL: TRANSLATION HELPER ══════════ -->
-  <div id="page-tool-i18n" class="page">
-    <div class="tool-back-bar">
-      <button class="tool-back-btn" onclick="navigate('tools')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        <span data-i18n="common.toolsBack">Tools</span>
-      </button>
-      <span class="tool-back-title" data-i18n="tooli18n.translationHelper">Translation Helper</span>
-    </div>
-    <div id="i18n-content"></div>
-  </div>
-
-  <!-- ══════════ TOOL: HELP IMPROVE THIS GUIDE ══════════ -->
-  <div id="page-tool-improve" class="page">
-    <div class="tool-back-bar">
-      <button class="tool-back-btn" onclick="navigate('tools')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        <span data-i18n="common.toolsBack">Tools</span>
-      </button>
-      <span class="tool-back-title" data-i18n="toolimprove.improveGuide">Help Improve This Guide</span>
-    </div>
-    <div id="improve-content"></div>
-  </div>
-
-</div><!-- END CONTENT -->
-
-<!-- Bottom Nav -->
-<nav id="nav">
-  <button class="nav-btn active" id="navbtn-home" onclick="navigate('home')">
-    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    <span class="nav-label" data-i18n="app.home">Home</span>
-  </button>
-  <button class="nav-btn" id="navbtn-pregnancy" onclick="navigate('pregnancy')">
-    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-    <span class="nav-label" data-i18n="app.prenatal">Prenatal</span>
-  </button>
-  <button class="nav-btn" id="navbtn-labor" onclick="navigate('labor')">
-    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-    <span class="nav-label" data-i18n="app.labor">Labor</span>
-  </button>
-  <button class="nav-btn" id="navbtn-recovery" onclick="navigate('recovery')">
-    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-    <span class="nav-label" data-i18n="app.recovery">Recovery</span>
-  </button>
-  <button class="nav-btn" id="navbtn-baby" onclick="navigate('baby')">
-    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg>
-    <span class="nav-label" data-i18n="app.baby">Baby</span>
-  </button>
-  <button class="nav-btn" id="navbtn-faq" onclick="navigate('faq')">
-    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.2 9.3a2.9 2.9 0 015.6 1c0 1.9-2.8 2.6-2.8 4.2"/><circle cx="12" cy="17.6" r="1.05" fill="currentColor" stroke="none"/></svg>
-    <span class="nav-label" data-i18n="app.faq">FAQ</span>
-  </button>
-  <button class="nav-btn" id="navbtn-tools" onclick="navigate('tools')">
-    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 9l3 3 5-5"/></svg>
-    <span class="nav-label" data-i18n="app.tools">Tools</span>
-  </button>
-</nav>
-
-<!-- Toast -->
-<div id="toast"></div>
-
-<!-- ══════════ MODALS ══════════ -->
-
-<!-- Log a Feeding -->
-<div id="modal-feed" class="modal-overlay" onclick="if(event.target===this)closeModal('feed')">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-title" data-i18n="modalFeed.logAFeeding">Log a Feeding</div>
-    <div class="form-field">
-      <label class="form-label" data-i18n="modalFeed.type">Type</label>
-      <div class="pill-row">
-        <button class="choice-pill selected" id="feed-type-breast" onclick="setFeedType('breast')" data-i18n="modalFeed.breast">🤱 Breast</button>
-        <button class="choice-pill" id="feed-type-bottle" onclick="setFeedType('bottle')" data-i18n="modalFeed.bottle">🍼 Bottle</button>
-      </div>
-    </div>
-    <div id="feed-breast-fields">
-      <div class="form-field">
-        <label class="form-label" data-i18n="modalFeed.side">Side</label>
-        <div class="pill-row">
-          <button class="choice-pill selected" id="feed-side-left" onclick="setFeedSide('left')" data-i18n="modalFeed.left">Left</button>
-          <button class="choice-pill" id="feed-side-right" onclick="setFeedSide('right')" data-i18n="modalFeed.right">Right</button>
-          <button class="choice-pill" id="feed-side-both" onclick="setFeedSide('both')" data-i18n="modalFeed.both">Both</button>
-        </div>
-      </div>
-      <div class="form-field">
-        <label class="form-label" data-i18n="modalFeed.durationMinutes">Duration (minutes)</label>
-        <input type="number" class="tool-input" id="feed-duration" data-i18n-eg="15" placeholder="e.g. 15" min="1" max="60" inputmode="numeric">
-      </div>
-    </div>
-    <div id="feed-bottle-fields" style="display:none">
-      <div class="form-field">
-        <label class="form-label" data-i18n="modalFeed.amountOz">Amount (oz)</label>
-        <input type="number" class="tool-input" id="feed-oz" data-i18n-eg="2.5" placeholder="e.g. 2.5" min="0.5" max="8" step="0.5" inputmode="decimal">
-      </div>
-    </div>
-    <div class="form-field">
-      <button class="big-action-btn btn-teal" onclick="saveFeed()" data-i18n="modalFeed.saveFeed">Save Feed</button>
-    </div>
-  </div>
-</div>
-
-<!-- Log Blood Pressure -->
-<div id="modal-bp" class="modal-overlay" onclick="if(event.target===this)closeModal('bp')">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-title" data-i18n="modalBp.logBloodPressure">Log Blood Pressure</div>
-    <div class="inline-fields">
-      <div>
-        <label class="form-label" data-i18n="modalBp.systolicTop">Systolic (top #)</label>
-        <input type="number" class="tool-input" id="bp-systolic" data-i18n-eg="118" placeholder="e.g. 118" min="70" max="220" inputmode="numeric">
-      </div>
-      <div>
-        <label class="form-label" data-i18n="modalBp.diastolicBottom">Diastolic (bottom #)</label>
-        <input type="number" class="tool-input" id="bp-diastolic" data-i18n-eg="76" placeholder="e.g. 76" min="40" max="130" inputmode="numeric">
-      </div>
-    </div>
-    <div class="callout" style="margin:0 16px 12px">
-      <div class="callout-title" data-i18n="modalBp.normalRange">Normal range</div>
-      <p data-i18n="modalBp.below12080IsNormal">Below 120/80 is normal. ≥ 140/90 during pregnancy needs same-day attention.</p>
-    </div>
-    <div class="form-field">
-      <button class="big-action-btn btn-teal" onclick="saveBP()" data-i18n="modalBp.saveReading">Save Reading</button>
-    </div>
-  </div>
-</div>
-
-<!-- Log Weight -->
-<div id="modal-weight" class="modal-overlay" onclick="if(event.target===this)closeModal('weight')">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-title" data-i18n="modalWeight.logWeight">Log Weight</div>
-    <div class="inline-fields">
-      <div>
-        <label class="form-label" data-i18n="modalWeight.weightLbs">Weight (lbs)</label>
-        <input type="number" class="tool-input" id="weight-lbs" data-i18n-eg="152" placeholder="e.g. 152" min="80" max="400" inputmode="decimal">
-      </div>
-      <div>
-        <label class="form-label" data-i18n="modalWeight.weekOfPregnancy">Week of pregnancy</label>
-        <input type="number" class="tool-input" id="weight-week" data-i18n-eg="28" placeholder="e.g. 28" min="4" max="44" inputmode="numeric">
-      </div>
-    </div>
-    <div class="form-field">
-      <button class="big-action-btn btn-teal" onclick="saveWeight()" data-i18n="modalWeight.save">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- Add / Edit Visit -->
-<div id="modal-appt" class="modal-overlay" onclick="if(event.target===this)closeModal('appt')">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-title" id="appt-modal-title" data-i18n="modalAppt.addVisit">Add Visit</div>
-    <div class="form-field">
-      <label class="form-label" data-i18n="modalAppt.visitType">Visit Type</label>
-      <select class="tool-select" id="appt-type">
-        <option value="" data-i18n="apptType.selectType">Select type…</option>
-        <option value="ob-routine" data-i18n="apptType.obRoutine">OB – Routine</option>
-        <option value="ob-triage" data-i18n="apptType.obTriage" data-i18n-html>OB – L&amp;D Triage / Unscheduled</option>
-        <option value="mfm-consult" data-i18n="apptType.mfmConsult">MFM Consultation</option>
-        <option value="mfm-followup" data-i18n="apptType.mfmFollowup">MFM Follow-up</option>
-        <option value="endo" data-i18n="apptType.endo">Endocrinology</option>
-        <option value="cardio" data-i18n="apptType.cardio">Cardiology</option>
-        <option value="nephro" data-i18n="apptType.nephro">Nephrology</option>
-        <option value="ultrasound" data-i18n="apptType.ultrasound">Ultrasound</option>
-        <option value="nst" data-i18n="apptType.nst">Non-Stress Test (NST)</option>
-        <option value="lactation" data-i18n="apptType.lactation">Lactation Consult</option>
-        <option value="pp-2wk" data-i18n="apptType.pp2wk">Postpartum – 2 weeks</option>
-        <option value="pp-6wk" data-i18n="apptType.pp6wk">Postpartum – 6 weeks</option>
-        <option value="peds-2-5d" data-i18n="apptType.peds25d">Pediatrician – 2–5 days</option>
-        <option value="peds-2wk" data-i18n="apptType.peds2wk">Pediatrician – 2 weeks</option>
-        <option value="peds-2mo" data-i18n="apptType.peds2mo">Pediatrician – 2 months</option>
-        <option value="family" data-i18n="apptType.family">Family Doctor</option>
-        <option value="other" data-i18n="apptType.other">Other</option>
-      </select>
-    </div>
-    <div class="form-field">
-      <label class="form-label" data-i18n="modalAppt.date">Date</label>
-      <input type="date" class="tool-input" id="appt-date">
-    </div>
-    <div class="form-field">
-      <label class="form-label" data-i18n="modalAppt.questionsToAskBeforehand">Questions to ask beforehand</label>
-      <textarea class="tool-textarea" id="appt-questions" data-i18n-placeholder="modalAppt.questionsPlaceholder" placeholder="What do I want to ask at this visit?"></textarea>
-    </div>
-    <div class="form-field">
-      <label class="form-label" data-i18n="modalAppt.notesFromVisit">Notes from visit</label>
-      <textarea class="tool-textarea" id="appt-notes-field" data-i18n-placeholder="modalAppt.notesPlaceholder" placeholder="What did we discuss? Any follow-up needed?"></textarea>
-    </div>
-    <div class="form-field">
-      <button class="big-action-btn btn-navy" onclick="saveAppt()" data-i18n="modalAppt.saveVisit">Save Visit</button>
-    </div>
-  </div>
-</div>
-
-<div id="print-view"></div>
-
-</div><!-- end #app -->
-
-<script src="./i18n/i18n.js?v=60"></script>
-<script src="./i18n/body-templates.js?v=60"></script>
-<script src="./i18n/epds/epds.en.js?v=60"></script>
-<script src="./i18n/epds/epds.es.js?v=60"></script>
-<script src="./i18n/epds/epds.cnh.js?v=60"></script>
-<script src="./i18n/epds/epds.ko.js?v=60"></script>
-<script src="./i18n/epds/epds.zh.js?v=60"></script>
-<script src="./i18n/epds/epds.ar.js?v=60"></script>
-<script src="./i18n/epds/phq9.fr.js?v=60"></script>
-<script src="./i18n/epds/phq9.ru.js?v=60"></script>
-<script src="./content.js?v=60"></script>
-<script src="./tools.js?v=60"></script>
-<script src="./i18n/translate-tool.js?v=60"></script>
-<script src="./i18n/improve-tool.js?v=60"></script>
-<script src="./i18n/nausea-tool.js?v=60"></script>
+// Clean up after the old app.
+//
+// This page deliberately does NOT register a worker. sw.js is still needed and
+// is still shipped, but it is reached a different way: a browser that already
+// has a registration re-fetches the worker script on navigation, finds the new
+// one, and runs its teardown. That is what frees an installed copy from the
+// old cache-first worker, which would otherwise keep serving the old app and
+// never let anyone reach this page.
+//
+// Registering here as well would mean registering a worker whose only job is
+// to unregister itself, on a page that has no use for one.
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations()
+    .then(function (rs) { rs.forEach(function (r) { r.unregister(); }); })
+    .catch(function () {});
+}
+if (window.caches && caches.keys) {
+  caches.keys()
+    .then(function (ks) { ks.forEach(function (k) { caches.delete(k); }); })
+    .catch(function () {});
+}
+</script>
 </body>
 </html>

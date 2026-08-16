@@ -1,105 +1,35 @@
-// Bump on every content or code change, including any locale file.
-const CACHE_NAME = 'birth-guide-v60-i18n';
+// This app has moved to obiana.app. This worker exists to undo the old one.
+//
+// The previous service worker was cache-first over the whole app, so anyone
+// who installed myob.robbiemed.org to their phone would keep being served the
+// cached copy indefinitely and would never see the notice telling them where
+// the app went. Those are precisely the people the notice is for.
+//
+// So: claim control immediately, delete every cache this origin holds,
+// unregister, and reload any open window so it picks up the new page. There is
+// deliberately no fetch handler, so nothing is intercepted in the meantime.
+//
+// Nothing registers this file. It is reached because a browser that already
+// holds a registration re-fetches the worker script on navigation, sees these
+// bytes differ from the old worker's, and installs it. A visitor arriving with
+// no registration never needs it.
 
-// English is precached unconditionally: it is the fallback layer, so the app
-// cannot render without it. Other locales are cached on first use (see fetch
-// handler) rather than precached, to keep the install payload small.
-const ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
-  './favicon.ico',
-  './favicon.svg',
-  './apple-touch-icon.png',
-  './icon-192.png',
-  './icon-512.png',
-  './styles.css?v=60',
-  './content.js?v=60',
-  './tools.js?v=60',
-  './i18n/translate-tool.js?v=60',
-  './i18n/improve-tool.js?v=60',
-  './i18n/nausea-tool.js?v=60',
-  './i18n/i18n.js?v=60',
-  './i18n/body-templates.js?v=60',
-  './i18n/locale.en.js?v=60',
-  './flags/af.svg?v=60',
-  './flags/br.svg?v=60',
-  './flags/cn.svg?v=60',
-  './flags/de.svg?v=60',
-  './flags/es.svg?v=60',
-  './flags/fr.svg?v=60',
-  './flags/gb.svg?v=60',
-  './flags/jp.svg?v=60',
-  './flags/kr.svg?v=60',
-  './flags/mm.svg?v=60',
-  './flags/ph.svg?v=60',
-  './flags/pl.svg?v=60',
-  './flags/ru.svg?v=60',
-  './flags/sa.svg?v=60',
-  './flags/th.svg?v=60',
-  './flags/us.svg?v=60',
-  './flags/vn.svg?v=60',
-  './i18n/epds/epds.en.js?v=60',
-  './i18n/epds/epds.es.js?v=60',
-  './i18n/epds/epds.cnh.js?v=60',
-  './i18n/epds/epds.ko.js?v=60',
-  './i18n/epds/epds.zh.js?v=60',
-  './i18n/epds/epds.ar.js?v=60',
-  './i18n/epds/phq9.fr.js?v=60',
-  './i18n/epds/phq9.ru.js?v=60',
-];
+self.addEventListener('install', () => self.skipWaiting());
 
-// Locales fetched on demand and kept once seen, so a language the user has
-// actually opened stays available offline.
-// zom has no 2-letter code; pt-BR carries a region subtag.
-const LOCALE_RE = /\/i18n\/locale\.[a-z]{2,3}(?:-[A-Za-z]{2,4})?\.js$/;
+self.addEventListener('activate', (event) => {
+  event.waitUntil((async () => {
+    await self.clients.claim();
 
-self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(ASSETS))
-      .then(() => self.skipWaiting())
-  );
-});
+    const keys = await caches.keys();
+    await Promise.all(keys.map((k) => caches.delete(k)));
 
-self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))))
-      .then(() => self.clients.claim())
-  );
-});
+    await self.registration.unregister();
 
-self.addEventListener('fetch', e => {
-  // Network-first for Google Fonts; cache-first for everything else
-  if (e.request.url.includes('fonts.g')) {
-    e.respondWith(
-      fetch(e.request).then(res => {
-        const clone = res.clone();
-        caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
-        return res;
-      }).catch(() => caches.match(e.request))
-    );
-    return;
-  }
-  e.respondWith(
-    caches.match(e.request).then(cached => {
-      if (cached) return cached;
-      return fetch(e.request).then(res => {
-        if (res && res.status === 200 && res.type !== 'opaque') {
-          const clone = res.clone();
-          caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
-        }
-        return res;
-      }).catch(() => {
-        // Never serve the HTML shell in place of a missing script: it would
-        // load with status 200 and blow up as a syntax error. Fail cleanly so
-        // i18n.js can fall back to English.
-        if (LOCALE_RE.test(e.request.url) || e.request.destination === 'script') {
-          return new Response('', { status: 504, statusText: 'Offline' });
-        }
-        return caches.match('./index.html');
-      });
-    })
-  );
+    // Reload open windows so an installed copy shows the notice now rather
+    // than the next time it happens to be opened.
+    const windows = await self.clients.matchAll({ type: 'window' });
+    for (const w of windows) {
+      if ('navigate' in w) w.navigate(w.url).catch(() => {});
+    }
+  })());
 });

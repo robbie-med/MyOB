@@ -1,3 +1,18 @@
+# MyOB has moved to Obiana
+
+This project is now **[Obiana](https://obiana.app)**, developed at
+<https://github.com/robbie-med/obiana>.
+
+This repository is kept for its history and is no longer maintained. The site
+it serves, myob.robbiemed.org, now shows a notice pointing to the new address,
+and offers a copy of anything saved on the device so it can be imported into
+Obiana. Saved information does not move between web addresses on its own.
+
+Everything below describes the app as it was when this repository was last
+updated.
+
+---
+
 # Obiana: Pregnancy Handbook
 
 An evidence-based, offline-capable pregnancy and newborn guide for patients,
